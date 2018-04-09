@@ -2,6 +2,7 @@
     Credit goes to https://stackoverflow.com/users/684592/kotaro
     https://stackoverflow.com/questions/14716497/how-can-i-find-a-list-of-street-intersections-from-openstreetmap-data?rq=1
 """
+import os
 import sys
 import itertools
 
@@ -115,8 +116,9 @@ def extract_intersections(osm):
 
 def main():
     dir = file_utils.get_file_dir(__file__)
-    file = file_utils.path_join(dir, '../tests/data/or-wa.osm')
-    file = file_utils.path_join(dir, '../tests/data/portland.osm')
+    dir = file_utils.get_parent_dir(dir)
+    file = os.path.join(dir, 'tests', 'data', 'or-wa.osm')
+    file = os.path.join(dir, 'tests', 'data', 'portland.osm')
     intersections = extract_intersections(file)
     for i in intersections:
         print i, intersections[i]
