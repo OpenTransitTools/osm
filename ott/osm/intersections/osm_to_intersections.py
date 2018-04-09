@@ -88,8 +88,8 @@ def extract_intersections(osm):
             n = counter.get(z)
             if n and n > 1:
                 intersection_nodes.append(child)
-        if i % 100000 == 0: sys.stderr.write('#')
-
+        if i % 100000 == 0:
+            sys.stderr.write('#')
 
     sys.stderr.write('\n\nINERSECTION NODES: {}\n'.format(len(intersection_nodes)))
 
@@ -110,7 +110,6 @@ def extract_intersections(osm):
     """
     print "num raw intersections: {}, num named intersections: {}".format(raw_intersection_count, len(ret_val))
     """
-
     return ret_val
 
 
