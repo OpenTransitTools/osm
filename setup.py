@@ -34,9 +34,6 @@ setup(
     author_email="info@opentransittools.org",
     dependency_links=[
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
-        'git+https://github.com/OpenTransitTools/gbfsdb.git#egg=ott.gbfsdb-1.0.0',
-        'git+https://github.com/OpenTransitTools/gtfsdb.git#egg=gtfsdb-1.0.0',
-        'git+https://github.com/OpenTransitTools/gtfsdb_realtime.git#egg=ott.gtfsdb_realtime-1.0.0',
     ],
     license="Mozilla-derived (http://opentransittools.com)",
     url='http://opentransittools.com',
@@ -51,12 +48,12 @@ setup(
     # find ott | grep py$ | xargs grep "def.main"
     entry_points="""
         [console_scripts]
-        osm_update = ott.osm.osm.osm_cache:OsmCache.load
-        osm_to_pbf = ott.osm.osm.osm_cache:OsmCache.convert_osm_to_pbf
-        pbf_to_osm = ott.osm.osm.osm_cache:OsmCache.convert_pbf_to_osm
-        osm_other_exports = ott.osm.osm.osm_cache:OsmCache.other_exports
-        osm_stats = ott.osm.osm.osm_info:OsmInfo.print_stats
-        osm_rename = ott.osm.osm.osm_rename:main
-        osm_intersections = ott.osm.osm.intersections.osm_to_intersections:main
+        osm_update = ott.osm.osm_cache:OsmCache.load
+        osm_to_pbf = ott.osm.osm_cache:OsmCache.convert_osm_to_pbf
+        pbf_to_osm = ott.osm.osm_cache:OsmCache.convert_pbf_to_osm
+        osm_other_exports = ott.osm.osm_cache:OsmCache.other_exports
+        osm_stats = ott.osm.osm_info:OsmInfo.print_stats
+        osm_rename = ott.osm.osm_rename:main
+        osm_intersections = ott.osm.intersections.osm_to_intersections:main
     """,
 )
