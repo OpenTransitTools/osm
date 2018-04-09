@@ -1,5 +1,5 @@
-0.1.0 (2015-01-15)
+0.1.0 (2018-04-15)
 ------------------
 - Initial project setup
 - OTT Deploy stuff
-- Includes scripts to run routing tests against an OTP Graph.obj
+- Includes scripts to run OSM parse/transform/load tests
