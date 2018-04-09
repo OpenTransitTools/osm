@@ -53,7 +53,7 @@ setup(
         pbf_to_osm = ott.osm.osm_cache:OsmCache.convert_pbf_to_osm
         osm_other_exports = ott.osm.osm_cache:OsmCache.other_exports
         osm_stats = ott.osm.osm_info:OsmInfo.print_stats
-        osm_rename = ott.osm.osm_rename:main
+        osm_rename = ott.osm.rename.osm_rename:main
         osm_intersections = ott.osm.intersections.osm_to_intersections:main
     """,
 )

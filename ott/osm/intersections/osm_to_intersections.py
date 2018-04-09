@@ -122,7 +122,7 @@ def get_test_data():
 
 def main():
     from ott.utils.parse.cmdline import osm_cmdline
-    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions')
+    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions', osm_required=True)
     osm_file = p.osm
     if osm_file is None:
         osm_file = get_test_data()
@@ -130,7 +130,6 @@ def main():
     intersections = extract_intersections(osm_file)
     for i in intersections:
         print i, intersections[i]
-
 
 
 if __name__ == '__main__':

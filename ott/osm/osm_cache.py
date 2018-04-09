@@ -5,7 +5,7 @@ from ott.utils import web_utils
 from ott.utils import string_utils
 from ott.utils.cache_base import CacheBase
 from .osm_info import OsmInfo
-from .osm_rename import OsmRename
+from osm.ott.osm.rename.osm_rename import OsmRename
 
 import os
 import re
