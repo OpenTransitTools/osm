@@ -9,7 +9,7 @@ except ImportError:
 
 from ott.utils import file_utils
 
-from ott.loader.osm.rename.osm_abbr_parser import OsmAbbrParser
+from ott.osm.rename.osm_abbr_parser import OsmAbbrParser
 
 import logging
 log = logging.getLogger(__file__)
@@ -34,6 +34,7 @@ TODO:
 
 
 """
+
 
 class OsmRename(object):
     """ Utility for getting stats on an osm file 

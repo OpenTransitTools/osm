@@ -114,14 +114,24 @@ def extract_intersections(osm):
     return ret_val
 
 
-def main():
+def get_test_data():
     dir = file_utils.get_file_dir(__file__)
     dir = file_utils.get_parent_dir(dir)
-    file = os.path.join(dir, 'tests', 'data', 'or-wa.osm')
     file = os.path.join(dir, 'tests', 'data', 'portland.osm')
-    intersections = extract_intersections(file)
+    return file
+
+
+def main():
+    from ott.utils.parse.cmdline import osm_cmdline
+    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions')
+    osm_file = p.osm
+    if osm_file is None:
+        osm_file = get_test_data()
+
+    intersections = extract_intersections(osm_file)
     for i in intersections:
         print i, intersections[i]
+
 
 
 if __name__ == '__main__':
