@@ -160,5 +160,5 @@ def add_xml_attribute_to_osm_tag(line, line_num, attribute_name="generator", att
 def main():
     """ cmd line processor """
     from ott.utils.parse.cmdline import osm_cmdline
-    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions', osm_required=True, out_required=True)
+    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions', osm_required=True, out_required=False)
     OsmRename(p.osm, p.output)
