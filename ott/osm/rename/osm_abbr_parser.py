@@ -68,7 +68,7 @@ class OsmAbbrParser(object):
                           | pre_nm
                           | nm_type
                           | nm
-                        )
+        )
 
     def parse(self, s):
         """
@@ -81,20 +81,23 @@ class OsmAbbrParser(object):
            'prefix': '',
            'name':   '',
         }
-        r = ret_val
-        # test whether this string is in our ignore list (e.g., South Shore Blvd) before sending to the parser  
-        if s.lower() in self.str_ignore_kw:
-            d = self.csv_ignore_replace(self.str_ignore, s)
-            r['name'] = d['replace']
-            r['type'] = d['type']
-            r['prefix'] = d['prefix']
-            r['suffix'] = d['suffix']
-        else:
-           p = self.streetAddress.parseString(s)
-           r['type'] = self.find_replace(self.street_types, p.type)
-           r['suffix'] = self.find_replace(self.dir_types,    p.suffix)
-           r['prefix'] = self.find_replace(self.dir_types,    p.prefix)
-           r['name'] = p.name
+
+        if s and len(s) > 0:
+            r = ret_val
+
+            # test whether this string is in our ignore list (e.g., South Shore Blvd) before sending to the parser
+            if s.lower() in self.str_ignore_kw:
+                d = self.csv_ignore_replace(self.str_ignore, s)
+                r['name'] = d['replace']
+                r['type'] = d['type']
+                r['prefix'] = d['prefix']
+                r['suffix'] = d['suffix']
+            else:
+               p = self.streetAddress.parseString(s)
+               r['name'] = p.name
+               r['type'] = self.find_replace(self.street_types, p.type)
+               r['suffix'] = self.find_replace(self.dir_types,    p.suffix)
+               r['prefix'] = self.find_replace(self.dir_types,    p.prefix)
 
         return ret_val
 
@@ -110,12 +113,20 @@ class OsmAbbrParser(object):
                          label: TRUE (or FALSE)
                        }
         """
+        ret_val = None
+
+        try:
+            orig = orig.strip()
+        except Exception:
+            pass
+
         s = self.sub_str_replace(self.str_replace, orig)
         ret_val = r = self.parse(s)
         pretty = ""
         pretty = self.pstr(r['prefix'], pretty) + self.pstr(r['name'], pretty) + self.pstr(r['type'], pretty) + self.pstr(r['suffix'], pretty)
         ret_val['label_text'] = pretty.strip()
         ret_val['label'] = self.do_label(r['name'], r['type'])
+
         return ret_val
 
     def to_str(self, orig):
