@@ -33,7 +33,10 @@ class OsmRename(object):
             :todo ... add unit tests
             TODO: fix up hacky parts...
         """
+        # import pdb; pdb.set_trace()
         self.osm_input_path = osm_infile_path
+        if osm_outfile_path is None or len(osm_outfile_path) == 0:
+            osm_outfile_path = osm_infile_path
         is_same_input_output = False
         if osm_outfile_path == osm_infile_path:
             self.osm_output_path = osm_outfile_path + "temp"

@@ -80,7 +80,7 @@ def extract_intersections(osm):
     #intersections = filter(lambda x: counter[x] > 1, counter)
     #sys.stderr.write('INtERSECTIONS READ: {}\n'.format(len(intersections)))
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     intersection_nodes = []
     for i, child in enumerate(children):
         if child.tag == 'node':
