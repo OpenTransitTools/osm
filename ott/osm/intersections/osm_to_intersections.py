@@ -122,7 +122,7 @@ def get_test_data():
 
 def main():
     from ott.utils.parse.cmdline import osm_cmdline
-    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions', osm_required=True)
+    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions', osm_required=False)
     osm_file = p.osm
     if osm_file is None:
         osm_file = get_test_data()

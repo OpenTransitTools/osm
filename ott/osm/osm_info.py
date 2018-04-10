@@ -73,7 +73,6 @@ class OsmInfo(object):
         """ return OSM .osm-stats info json
             will either read the .osm-stats file or create a new stats file calculated via the .osm file
         """
-        # import pdb; pdb.set_trace()
         stats_path = cls.get_stats_file_path(osm_path, stats_file)
         is_stats_good = False
 
@@ -138,12 +137,29 @@ class OsmInfo(object):
         return osm_msg
 
     @classmethod
-    def print_stats(cls):
-        """ run the SUM loader routines
+    def print_stats_from_config(cls):
+        """ print stats from the .osm file that is config'd in the cache
         """
         from .osm_cache import OsmCache
         c = OsmCache()
-        s = OsmInfo.get_stats(c.osm_path)
-        print json_utils.dict_to_json_str(s, pretty_print=True)
+        cls.print_stats(c.osm_path)
         print ""
         print OsmInfo.get_cache_msgs(c.cache_dir)
+
+    @classmethod
+    def print_stats(cls, osm_path):
+        """ print stats from input file
+        """
+        s = OsmInfo.get_stats(osm_path)
+        print json_utils.dict_to_json_str(s, pretty_print=True)
+
+
+def main():
+    # import pdb; pdb.set_trace()
+    from ott.utils.parse.cmdline import osm_cmdline
+    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_info', osm_required=True)
+    OsmInfo.print_stats(p.osm)
+
+
+if __name__ == '__main__':
+    main()
