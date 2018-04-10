@@ -1,7 +1,9 @@
 str,replace
 César,Cesar
-Estrada,E.
 Chávez,Chavez
+C\xe9sar,Cesar
+Ch\xe1vez,Chavez
+Estrada,E.
 ", Junior "," Jr "
 Bureau of Indian Affairs,BIA
 National Forest Development,NF

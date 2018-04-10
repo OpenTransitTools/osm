@@ -23,9 +23,9 @@ class OsmAbbrParser(object):
         """
 
         # step 1: load .csv files from ./config/ used for parsing, find/replace and string fixups
+        self.str_replace_kw,  self.str_replace  = self.load_replace_csv('string_replace.csv')
         self.street_types_kw, self.street_types = self.load_replace_csv('street_types.csv')
         self.dir_types_kw,    self.dir_types    = self.load_replace_csv('dir_types.csv')
-        self.str_replace_kw,  self.str_replace  = self.load_replace_csv('string_replace.csv')
         self.str_ignore_kw,   self.str_ignore   = self.load_replace_csv('string_ignore_replace.csv')
         self.str_ignore_kw = self.str_ignore_kw.lower()
 
@@ -222,7 +222,9 @@ class OsmAbbrParser(object):
         strings = ""
         l = []
         for row in reader:
-           strings += row['str'] + " " + row['replace'] + " "
-           l.append(row)
+            row['str'] = row['str'].decode('utf-8')
+            # import pdb; pdb.set_trace()
+            strings += row['str'] + " " + row['replace'] + " "
+            l.append(row)
 
         return strings, l

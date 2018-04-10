@@ -17,7 +17,7 @@ except ImportError, e:
 tot_proc = 0
 num_proc = 0
 def get_names_from_way_list(way_list):
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     global num_proc
     global tot_proc
     ret_val = {}
