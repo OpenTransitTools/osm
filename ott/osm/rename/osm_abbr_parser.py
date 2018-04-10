@@ -5,6 +5,9 @@ import os
 import inspect
 import csv
 from pyparsing import *
+import logging
+log = logging.getLogger(__file__)
+
 
 
 class OsmAbbrParser(object):
@@ -35,7 +38,7 @@ class OsmAbbrParser(object):
         prefix = Combine(StringStart() + MatchFirst(dt) + Optional(" ") + Optional(".").suppress())
         suffix = Combine(OneOrMore(MatchFirst(dt) + Optional(".").suppress()) + StringEnd())
 
-        name_chars = nums + alphas + "-" + "." + "," + "á" + "é" + "." + "'" + '"' + "&" + ";" + ":" + "#" + "@" + "(" + ")"
+        name_chars = nums + alphas + "-" + "." + "," + u"á" + u"é" + "." + "'" + '"' + "&" + ";" + ":" + "#" + "@" + "(" + ")"
         name_string = Word(name_chars) 
         street_name = (
                        Combine( 
@@ -121,8 +124,8 @@ class OsmAbbrParser(object):
             f = self.dict(orig)
             if f and len(f['label_text']) > 0:
                 ret_val = f['label_text']
-        except:
-            pass
+        except Exception as e:
+            log.debug(e)
         return ret_val
 
     def do_label(self, s, t):

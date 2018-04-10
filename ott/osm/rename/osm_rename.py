@@ -154,7 +154,7 @@ def add_xml_attribute_to_osm_tag(line, line_num, attribute_name="generator", att
         xml.set(attribute_name, attribue_val)
         ret_val = ET.tostring(xml)
         ret_val = ret_val.replace("</osm>", "").replace("/>", ">")
-    except Exception, e:
+    except Exception as e:
         log.warn("couldn't add attribute {} to xml element on line number {}", attribute_name, line_num)
         log.warn(e)
     return ret_val
