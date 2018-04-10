@@ -4,7 +4,6 @@
 import os
 import inspect
 import csv
-
 from pyparsing import *
 
 
@@ -20,7 +19,7 @@ class OsmAbbrParser(object):
         constructor builds the pyparsing parser
         """
 
-        # step 1: load in .csv files used for parsing, find/replace and string fixups
+        # step 1: load .csv files from ./config/ used for parsing, find/replace and string fixups
         self.street_types_kw, self.street_types = self.load_replace_csv('street_types.csv')
         self.dir_types_kw,    self.dir_types    = self.load_replace_csv('dir_types.csv')
         self.str_replace_kw,  self.str_replace  = self.load_replace_csv('string_replace.csv')
@@ -214,7 +213,7 @@ class OsmAbbrParser(object):
             from a .csv file, builds mappings that provide both keywords for the parser and a list of text replacement dicts
         """
         # street types -- used for both parser and replacement
-        csv_path = os.path.join(self.this_module_dir, fn)
+        csv_path = os.path.join(self.this_module_dir, 'config', fn)
         f = open(csv_path, 'r')
         reader = csv.DictReader(f)
         strings = ""
