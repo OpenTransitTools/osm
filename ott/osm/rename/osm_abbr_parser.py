@@ -222,7 +222,7 @@ class OsmAbbrParser(object):
         strings = ""
         l = []
         for row in reader:
-            row['str'] = row['str'].decode('utf-8')
+            row['str'] = row['str'].decode('utf-8')  # csv read adds strange utf8 pre-character \xc3 ... this removes that character
             # import pdb; pdb.set_trace()
             strings += row['str'] + " " + row['replace'] + " "
             l.append(row)
