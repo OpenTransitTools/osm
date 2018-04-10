@@ -139,7 +139,7 @@ class OsmInfo(object):
         return osm_msg
 
     @classmethod
-    def print_stats_from_config(cls):
+    def print_stats_via_config(cls):
         """ print stats from the .osm file that is config'd in the cache
         """
         from .osm_cache import OsmCache
