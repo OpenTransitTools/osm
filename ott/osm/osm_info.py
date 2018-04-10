@@ -5,7 +5,9 @@ from ott.utils import date_utils
 from ott.utils import file_utils
 
 import logging
+logging.basicConfig()
 log = logging.getLogger(__file__)
+
 
 
 class OsmInfo(object):
@@ -150,8 +152,13 @@ class OsmInfo(object):
     def print_stats(cls, osm_path):
         """ print stats from input file
         """
-        s = OsmInfo.get_stats(osm_path)
-        print json_utils.dict_to_json_str(s, pretty_print=True)
+        try:
+            s = OsmInfo.get_stats(osm_path)
+            print json_utils.dict_to_json_str(s, pretty_print=True)
+        except Exception, e:
+            log.error(e)
+            if osm_path.endswith(('.osm', '.xml', '.osm.bz2', '.xml.bz2')) is False:
+                log.error("NOTE: your file should end with .osm or .xml")
 
 
 def main():
