@@ -49,9 +49,6 @@ setup(
     entry_points="""
         [console_scripts]
         osm_update = ott.osm.osm_cache:OsmCache.load
-        osm_to_pbf = ott.osm.osm_cache:OsmCache.convert_osm_to_pbf
-        pbf_to_osm = ott.osm.osm_cache:OsmCache.convert_pbf_to_osm
-        osm_other_exports = ott.osm.osm_cache:OsmCache.other_exports
         osm_stats_cfg = ott.osm.osm_info:OsmInfo.print_stats_via_config
         osm_stats = ott.osm.osm_info:main
         osm_rename = ott.osm.rename.osm_rename:main

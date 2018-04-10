@@ -208,20 +208,6 @@ class OsmCache(CacheBase):
         osm.check_cached_osm(force_update=object_utils.is_force_update())
 
     @classmethod
-    def convert_osm_to_pbf(cls):
-        """ run the SUM loader routines
-        """
-        osm = OsmCache()
-        osm.osm_to_pbf()
-
-    @classmethod
-    def convert_pbf_to_osm(cls):
-        """ run the SUM loader routines
-        """
-        osm = OsmCache()
-        osm.pbf_to_osm()
-
-    @classmethod
     def other_exports(cls):
         """ export other .osm files
         """
