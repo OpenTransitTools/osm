@@ -13,6 +13,7 @@ requires = [
     'osmread',
     'protobuf',
     'pyparsing',
+    'imposm',
     'shapely',
 ]
 
