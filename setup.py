@@ -53,6 +53,6 @@ setup(
         osm_stats = ott.osm.osm_info:main
         osm_rename = ott.osm.rename.osm_rename:main
         osm_intersections = ott.osm.intersections.osm_to_intersections:main
-        osm_abbr_tester = ott.osm.rename.tests.osm_abbr_tester:main
+        osm_abbr_tester = ott.osm.tests.osm_abbr_tester:main
     """,
 )
