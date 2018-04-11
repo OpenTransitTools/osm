@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="Osmosis 0.45">
+  <bounds minlon="-122.70000" minlat="45.45000" maxlon="-122.62000" maxlat="45.54000" origin="0.45"/>
+
+  <way id="1" version="111" timestamp="2018-09-15T13:11:13Z" uid="111" user="Frank X. Purcell" changeset="111">
+    <tag k="name" v="Northeast César E. Chávez Boulevard"/>
+    <tag k="addr:street" v="Southeast César E. Chávez Boulevard"/>
+    <tag k="old_name" v="West César E. Chávez Boulevard"/>
+    <tag k="name" v="North 82nd Avenue Frontage Avenue"/>
+    <tag k="name" v="East 82nd Street Frontage Avenue"/>
+    <tag k="name" v="Northeast 82nd Avenue Frontage Street"/>
+    <tag k="name" v="Southeast 82nd Drive Frontage Drive"/>
+    <tag k="name" v="82nd Street Frontage Street"/>
+    <tag k="name" v="Columbia Boulevard Frontage Road"/>
+    <tag k="name" v="Southwest Market Street Drive"/>
+    <tag k="name" v="Southwest Market Street Drive Frontage Road"/>
+    <tag k="name" v="Smith Street Alley"/>
+    <tag k="name" v="South Smith Street Alley"/>
+    <tag k="name" v="Southwest Mill Street Terrace"/>
+    <tag k="name" v="Southwest Mill Street Circle"/>
+    <tag k="name" v="Southwest 6th Avenue Circle"/>
+    <tag k="name" v="Southwest 6th Avenue Drive"/>
+    <tag k="name" v="East 7th Street Extention"/>
+    <tag k="name" v="East 7th Street Extension"/>
+    <tag k="name" v="West A Street"/>
+    <tag k="name" v="Willamette River"/>
+    <tag k="name" v="Columbia River"/>
+  </way>
+</osm>
