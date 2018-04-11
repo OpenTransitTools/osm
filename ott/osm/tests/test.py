@@ -43,17 +43,19 @@ class TestOsmRename(unittest.TestCase):
         osm_out = os.path.join(self.thisdir, "data", "test_renamed_problematic_strings.osm")
         OsmRename.rename(osm_in, osm_out)
 
+        # !!!!!!!!!!!! IMPORTANT - this test currently fails (as of 2018) !!!!!!!!!!!!
+
         # note: these strings currently not working -- @see:
         #   bin/osm_rename ott/loader/osm/rename/tests/test_data_problematic_strings.osm x; cat x
         problem_strs = ['=&gt;', '/', '|', '^', '%', '*', '&amp;', '=&gt;/|^%**&amp;']
         for p in problem_strs:
-            r = file_utils.grep(osm_out, "A{}B".format(p))
+            r = file_utils.grep(osm_out, u"A{}B".format(p))
             self.assertTrue(len(r) == 1)
 
-            r = file_utils.grep(osm_out, "SE {} Rd".format(p))
+            r = file_utils.grep(osm_out, u"SE {} Rd".format(p))
             self.assertTrue(len(r) == 1)
 
-            r = file_utils.grep(osm_out, "NW {}Street".format(p))
+            r = file_utils.grep(osm_out, u"NW {}Street".format(p))
             self.assertTrue(len(r) == 1)
 
 
@@ -66,7 +68,7 @@ class TestOsmIntersections(unittest.TestCase):
         pass
 
     def test_diff_calendar(self):
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         #self.assertTrue()
         pass
 

@@ -27,6 +27,6 @@ install:
 
 
 run:
-  1. bin/test ... this cmd will run osm's unit tests (see: http://docs.zope.org/zope.testrunner/#some-useful-command-line-options-to-get-you-started)
-  1. bin/...
+  - bin/test ... this cmd will run osm's unit tests (see: http://docs.zope.org/zope.testrunner/#some-useful-command-line-options-to-get-you-started)
+  - rm x; bin/osm_rename -o ott/osm/tests/data/test_data_2018.osm -out x; cat x 
 
