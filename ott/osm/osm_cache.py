@@ -103,6 +103,8 @@ class OsmCache(CacheBase):
             self.other_exports()
         return is_updated
 
+    # TODO: move this osmosis stuff to osmosis directory
+    # TODO need to check for .exe, them maybe download & install, finally need to test outputs ... make sure they're properly sized and have some necessary elements
     def get_osmosis_exe(self):
         """ get the path osmosis binary
             TODO - we should look for system installed osmosis first
