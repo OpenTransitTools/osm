@@ -15,13 +15,14 @@ class Osm2pgsql(object):
     db_url = None
     osm_path = None
 
-    def __init__(self, db_url='postgresql://ott@127.0.0.1:5432/ott', binary_name='osm2pgsql', osm_path='planet.osm'):
+    def __init__(self, db_url='postgresql://ott@127.0.0.1:5432/ott', binary_name='osm2pgsql', osm_path='ott/osm/tests/data/portland.osm'):
         """
         """
         exe_path = exe_utils.find_executable(binary_name)
         if exe_path:
             self.osm2pgsql_exe = exe_path
             self.db_url = db_url
+            self.osm_path = osm_path
             log.info("'{}' into '{}'".format(binary_name, db_url))
         else:
             log.info("NOTE: this won't work, since can't find osm2pgsql binary '{}'".format(binary_name))
