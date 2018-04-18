@@ -9,7 +9,6 @@ logging.basicConfig()
 log = logging.getLogger(__file__)
 
 
-
 class OsmInfo(object):
     """
     Utility for getting stats on an osm file

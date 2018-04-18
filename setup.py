@@ -50,6 +50,7 @@ setup(
     entry_points="""
         [console_scripts]
         osm_update = ott.osm.osm_cache:OsmCache.load
+        osm_to_pgsql = ott.osm.osm2pgsql.osm2pgsql:main
         osm_stats_cfg = ott.osm.osm_info:OsmInfo.print_stats_via_config
         osm_stats = ott.osm.osm_info:main
         osm_rename = ott.osm.rename.osm_rename:main
