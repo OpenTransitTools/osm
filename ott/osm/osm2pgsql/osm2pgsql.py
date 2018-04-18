@@ -1,5 +1,6 @@
 from ott.utils import exe_utils
 from ott.utils import file_utils
+from ott.utils import db_utils
 
 
 import logging
@@ -18,17 +19,18 @@ class Osm2pgsql(object):
         """
         exe_path = exe_utils.find_executable(binary_name)
         if exe_path:
-            self.osm2pgsql_exe = exe_utils
+            self.osm2pgsql_exe = exe_path
             self.db_url = db_url
             log.info("'{}' into '{}'".format(binary_name, db_url))
-            print exe_utils
         else:
             log.info("NOTE: this won't work, since can't find osm2pgsql binary '{}'".format(binary_name))
 
-
     def run(self):
         if self.db_url:
-            pass
+            db = db_utils.make_url(self.db_url)
+            cmd = "{} -c -d {} -H {} -P {} -U {}".format(self.osm2pgsql_exe, db.database, db.host, db.port, db.username)
+            log.info(cmd)
+            exe_utils.run_cmd(cmd, shell=True)
 
     @classmethod
     def factory(cls, cfg='app.ini'):
@@ -37,7 +39,8 @@ class Osm2pgsql(object):
 
 
 def main():
-    Osm2pgsql()
+    p = Osm2pgsql()
+    p.run()
 
 
 if __name__ == '__main__':
