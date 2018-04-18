@@ -4,7 +4,7 @@ from ott.utils import db_utils
 
 
 import logging
-logging.basicConfig()
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
@@ -28,6 +28,7 @@ class Osm2pgsql(object):
             log.info("NOTE: this won't work, since can't find osm2pgsql binary '{}'".format(binary_name))
 
     def run(self):
+        self.osm_path = 'or-wa.osm'
         if self.osm_path and self.db_url:
             db = db_utils.make_url(self.db_url)
             cmd = "{} -c -d {} -H {} -P {} -U {} {}".format(self.osm2pgsql_exe, db.database, db.host, db.port, db.username, self.osm_path)
