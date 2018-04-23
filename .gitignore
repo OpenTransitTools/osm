@@ -6,6 +6,8 @@ router-config.json
 lucene
 imposm
 bkup
+*.osm
+*.pbf
 *.old
 *-old
 *.urls
@@ -15,7 +17,6 @@ bkup
 *.tmp
 *.obj
 *.out
-*.osm
 *.pid
 call/
 call-test/
@@ -24,6 +25,7 @@ test/
 ned/
 tmp/
 cache/
+ccccc/
 osmosis/
 .git/
 tests/
