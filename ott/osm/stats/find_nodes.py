@@ -26,6 +26,7 @@ class FindNodes(object):
     @classmethod
     def find(cls, osm_file, tag_name, value_value=('yes', 'true')):
         """ will find nodes with """
+        pass
 
 
 def main():
