@@ -32,15 +32,16 @@ class OsmCache(CacheBase):
         """
         super(OsmCache, self).__init__(section='osm')
 
-        # step 1: cache dir management
+        # step 1: cache expire and bbox settings from config
         self.cache_expire = self.config.get_int('cache_expire', def_val=self.cache_expire)
+        self.top, self.bottom, self.left, self.right = self.config.get_bbox('bbox')
 
-        # step 2: output .osm file name
+        # step 2: output .osm file name and full (cache) directory path
         name = self.config.get('name')
         self.osm_name = string_utils.safe_append(name, ".osm")
         self.osm_path = string_utils.safe_path_join(self.cache_dir, self.osm_name)
 
-        # step 3: pbf tools
+        # step 3: pbf tools (for downloading new data from geofabrik, as well as converting the .pbf to our .osm)
         pbf_url = self.config.get('pbf_url')
         meta_url = self.config.get('meta_url')
         self.pbf_tools = PbfTools(self.cache_dir, self.this_module_dir, pbf_url, meta_url)
@@ -72,8 +73,7 @@ class OsmCache(CacheBase):
             sized = file_utils.is_min_sized(self.osm_path, min_size)
             pbf_newer = file_utils.is_a_newer_than_b(self.pbf_tools.pbf_path, self.osm_path, offset_minutes=10)
             if is_updated or pbf_newer or not fresh or not sized:
-                top, bottom, left, right = self.config.get_bbox('bbox')
-                self.pbf_tools.clip_to_bbox(self.pbf_tools.pbf_path, self.osm_path, top, bottom, left, right)
+                self.pbf_tools.clip_to_bbox(self.pbf_tools.pbf_path, self.osm_path, self.top, self.bottom, self.left, self.right)
                 is_updated = True
             else:
                 is_updated = False
@@ -103,6 +103,19 @@ class OsmCache(CacheBase):
 
     def is_configured(self):
         return len(self.osm_name) > 0 and len(self.osm_path) > 0 and self.pbf_tools.is_configured()
+
+    def get_bbox(self, format='str'):
+        """
+        bbox = left,bottom,right,top
+        bbox = min Longitude , min Latitude , max Longitude , max Latitude
+        """
+        if format == 'str':
+            "left: {}, bottom: {}, right: {}, top: {}".format(self.left, self.bottom, self.right, self.top)
+        elif format == 'll':
+           "min Lon: {}, min Lat: {}, max Lon: {}, max Lat: {}".format(self.left, self.bottom, self.right, self.top)
+        else:
+            "[{}, {}, {}, {}]".format(self.left, self.bottom, self.right, self.top)
+        return ret_val
 
     @classmethod
     def check_osm_file_against_cache(cls, app_dir, force_update=False):
