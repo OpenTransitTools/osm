@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 requires = [
     'ott.utils',
     'psycopg2',
-    'sqlalchemy',
+    'sqlalchemy<1.2',
     'simplejson',
     'osmread',
     'protobuf',
