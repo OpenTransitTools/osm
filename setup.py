@@ -42,7 +42,7 @@ setup(
     keywords='ott, osm, otp, gtfs, gtfsdb, data, database, services, transit',
     packages=find_packages(),
     package_data={
-        '': ['*.csv']
+        '': ['ott/osm/rename/config/*.csv']
     },
     include_package_data=True,
     zip_safe=False,
