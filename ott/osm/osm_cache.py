@@ -5,6 +5,7 @@ from ott.utils import web_utils
 from ott.utils import string_utils
 from ott.utils.cache_base import CacheBase
 
+from .pbf_tools import PbfTools
 from .stats.osm_info import OsmInfo
 from .rename.osm_rename import OsmRename
 
@@ -19,18 +20,10 @@ class OsmCache(CacheBase):
          1. it will look to see if a gtfs.zip file is in the cache, and download it and put it in the cache if not
          2. once cached, it will check to see that the file in the cache is the most up to date data...
     """
-    pbf_url = None
-    pbf_name = None
-    pbf_path = None
-    pbf_url = None
-
-    meta_url = None
-    meta_name = None
-    meta_path = None
-    meta_url = None
-
     osm_name = None
     osm_path = None
+
+    pbf_tools = None
 
     top = None
     bottom = None
@@ -45,20 +38,15 @@ class OsmCache(CacheBase):
         # step 1: cache dir management
         self.cache_expire = self.config.get_int('cache_expire', def_val=self.cache_expire)
 
-        # step 2: .pbf and .html (meta data) urls and file names
-        self.pbf_url = self.config.get('pbf_url')
-        self.pbf_name = web_utils.get_name_from_url(self.pbf_url)
-        self.meta_url = self.config.get('meta_url')
-        self.meta_name = web_utils.get_name_from_url(self.meta_url)
-
-        # step 3: output .osm file name
+        # step 2: output .osm file name
         name = self.config.get('name')
         self.osm_name = string_utils.safe_append(name, ".osm")
-
-        # step 4: file cache paths
-        self.pbf_path = string_utils.safe_path_join(self.cache_dir, self.pbf_name)
-        self.meta_path = string_utils.safe_path_join(self.cache_dir, self.meta_name)
         self.osm_path = string_utils.safe_path_join(self.cache_dir, self.osm_name)
+
+        # step 3: pbf tools
+        pbf_url = self.config.get('pbf_url')
+        meta_url = self.config.get('meta_url')
+        self.pbf_tools = PbfTools(self.cache_dir, self.this_module_dir, pbf_url, meta_url)
 
     def check_cached_osm(self, force_update=False):
         """
@@ -66,26 +54,29 @@ class OsmCache(CacheBase):
         convert .pbf to .osm if .pbf file is newer than .osm file
         :return indication if updated
         """
+        assert self.is_configured() is True
+
         is_updated = force_update
 
         min_size = self.config.get_int('min_size', def_val=100000)
 
         # step 1: download new osm pbf file if it's not new
-        fresh = self.is_fresh_in_cache(self.pbf_path)
-        sized = file_utils.is_min_sized(self.pbf_path, min_size)
+        fresh = self.is_fresh_in_cache(self.pbf_tools.pbf_path)
+        sized = file_utils.is_min_sized(self.pbf_tools.pbf_path, min_size)
         if force_update or not fresh or not sized:
-            self.download_pbf()
+            self.pbf_tools.download_pbf()
             is_updated = True
 
         # step 2: .pbf to .osm
-        if not file_utils.is_min_sized(self.pbf_path, min_size):
-            log.warn("OSM PBF file {} is not big enough".format(self.pbf_path))
+        if not file_utils.is_min_sized(self.pbf_tools.pbf_path, min_size):
+            log.warn("OSM PBF file {} is not big enough".format(self.pbf_tools.pbf_path))
         else:
             fresh = self.is_fresh_in_cache(self.osm_path)
             sized = file_utils.is_min_sized(self.osm_path, min_size)
-            pbf_newer = file_utils.is_a_newer_than_b(self.pbf_path, self.osm_path, offset_minutes=10)
+            pbf_newer = file_utils.is_a_newer_than_b(self.pbf_tools.pbf_path, self.osm_path, offset_minutes=10)
             if is_updated or pbf_newer or not fresh or not sized:
-                self.clip_to_bbox(input_path=self.pbf_path, output_path=self.osm_path)
+                top, bottom, left, right = self.config.get_bbox('bbox')
+                self.pbf_tools.clip_to_bbox(self.pbf_tools.pbf_path, self.osm_path, top, bottom, left, right)
                 is_updated = True
             else:
                 is_updated = False
@@ -99,71 +90,22 @@ class OsmCache(CacheBase):
         if is_updated:
             OsmRename.rename(self.osm_path, do_bkup=False)
             OsmInfo.cache_stats(self.osm_path)
-            self.osm_to_pbf()
+            self.pbf_tools.osm_to_pbf(self.osm_path)
             self.other_exports()
         return is_updated
 
-    # TODO: move this osmosis stuff to osmosis directory
-    # TODO need to check for .exe, them maybe download & install, finally need to test outputs ... make sure they're properly sized and have some necessary elements
-    def get_osmosis_exe(self):
-        """ get the path osmosis binary
-            TODO - we should look for system installed osmosis first
+    def other_exports(self):
+        """ export other .osm files
         """
-        # step 1: get osmosis binary path (for ux or dos, ala c:\\ in path will get you a .bin extension)
-        osmosis_dir = os.path.join(self.this_module_dir, "osmosis")
-        osmosis_exe = os.path.join(osmosis_dir, "bin", "osmosis")
-        if ":\\" in osmosis_exe:
-            osmosis_exe = osmosis_exe + ".bat"
+        exports = self.config.get_json('other_exports')
+        for e in exports:
+            in_path = os.path.join(self.cache_dir,  e['in'])
+            out_path = os.path.join(self.cache_dir, e['out'])
+            top, bottom, left, right = self.config.get_bbox(e['bbox'])
+            self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
 
-        # step 2: osmosis installed?
-        if not os.path.exists(osmosis_exe):
-            e = "OSMOSIS {} doesn't exist...\nMaybe cd into {} and run osmosis.sh".format(osmosis_exe, osmosis_dir)
-            raise Exception(e)
-        return osmosis_exe
-
-    def clip_to_bbox(self, input_path, output_path, bbox_ini_section="bbox"):
-        """ use osmosis to clip a bbox out of a .pbf, and output .osm file
-            (file paths derrived by the cache paths & config)
-            outputs: both an .osm file and a .pbf file of the clipped area
-        """
-        # import pdb; pdb.set_trace()
-        top, bottom, left, right = self.config.get_bbox(bbox_ini_section)
-        osmosis_exe = self.get_osmosis_exe()
-        osmosis = "{} --rb {} --bounding-box top={} bottom={} left={} right={} completeWays=true --wx {}"
-        osmosis_cmd = osmosis.format(osmosis_exe, input_path, top, bottom, left, right, output_path)
-        log.info(osmosis_cmd)
-        exe_utils.run_cmd(osmosis_cmd, shell=True)
-
-    def osm_to_pbf(self, osm_path=None, pbf_path=None):
-        """ use osmosis to convert .osm file to .pbf
-        """
-        if osm_path is None:
-            osm_path = self.osm_path
-        if pbf_path is None:
-            pbf_path = re.sub('.osm$', '', osm_path) + ".pbf"
-        osmosis_exe = self.get_osmosis_exe()
-        osmosis = '{} --read-xml {} --write-pbf {}'
-        osmosis_cmd = osmosis.format(osmosis_exe, osm_path, pbf_path)
-        exe_utils.run_cmd(osmosis_cmd, shell=True)
-
-    def pbf_to_osm(self, osm_path=None, pbf_path=None):
-        """ use osmosis to convert .pbf to .osm file
-        """
-        if osm_path is None:
-            osm_path = self.osm_path
-        if pbf_path is None:
-            pbf_path = re.sub('.osm$', '', osm_path) + ".pbf"
-        osmosis_exe = self.get_osmosis_exe()
-        osmosis = '{} --read-pbf {} --write-xml {}'
-        osmosis_cmd = osmosis.format(osmosis_exe, pbf_path, osm_path)
-        exe_utils.run_cmd(osmosis_cmd, shell=True)
-
-    def download_pbf(self):
-        log.info("wget {} to {}".format(self.pbf_url, self.pbf_path))
-        file_utils.bkup(self.pbf_path)
-        web_utils.wget(self.pbf_url, self.pbf_path)
-        if self.meta_url:
-            web_utils.wget(self.meta_url, self.meta_path)
+    def is_configured(self):
+        return len(self.osm_name) > 0 and len(self.osm_path) > 0 and self.pbf_tools.is_configured()
 
     @classmethod
     def check_osm_file_against_cache(cls, app_dir, force_update=False):
@@ -188,32 +130,18 @@ class OsmCache(CacheBase):
             log.warn(e)
         return ret_val
 
-    def is_configured(self):
-        return self.osm_name and self.osm_path and self.pbf_name and self.pbf_path
-
-    def other_exports(self):
-        """ export other .osm files
-        """
-        exports = self.config.get_json('other_exports')
-        for e in exports:
-            in_path = os.path.join(self.cache_dir,  e['in'])
-            out_path = os.path.join(self.cache_dir, e['out'])
-            self.clip_to_bbox(input_path=in_path, output_path=out_path, bbox_ini_section=e['bbox'])
-
     @classmethod
     def update(cls, force_update):
         """ check OSM for freshness
         """
-        ret_val = False
+        #import pdb; pdb.set_trace()
         osm = OsmCache()
-        if osm.is_configured():
-            ret_val = osm.check_cached_osm(force_update)
+        ret_val = osm.check_cached_osm(force_update)
         return ret_val
 
     @classmethod
     def load(cls):
-        """ run the SUM loader routines
+        """ run the load routine
         """
-        # import pdb; pdb.set_trace()
-        osm = OsmCache()
-        osm.check_cached_osm(force_update=object_utils.is_force_update())
+        ret_val = cls.update(force_update=object_utils.is_force_update())
+        return ret_val
