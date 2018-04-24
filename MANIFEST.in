@@ -1,0 +1,1 @@
+include ott/osm/rename/config/*.csv
