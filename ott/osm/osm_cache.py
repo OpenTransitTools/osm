@@ -217,4 +217,3 @@ class OsmCache(CacheBase):
         # import pdb; pdb.set_trace()
         osm = OsmCache()
         osm.check_cached_osm(force_update=object_utils.is_force_update())
-        # osm.other_exports() # testing

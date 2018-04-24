@@ -41,6 +41,9 @@ setup(
     url='http://opentransittools.com',
     keywords='ott, osm, otp, gtfs, gtfsdb, data, database, services, transit',
     packages=find_packages(),
+    package_data={
+        '': ['*.csv']
+    },
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,
