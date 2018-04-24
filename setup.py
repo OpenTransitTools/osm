@@ -14,14 +14,16 @@ requires = [
     'osmread',
     'protobuf',
     'pyparsing',
-    'imposm',
     'shapely',
 ]
+
+# sys (not windows) dependant dependencies
+if sys.platform == "darwin" or "win" not in sys.platform:
+    requires.append('imposm')
 
 extras_require = dict(
     dev=[],
 )
-
 
 setup(
     name='ott.osm',
