@@ -1,7 +1,5 @@
-from ott.utils import exe_utils
 from ott.utils import file_utils
 from ott.utils import object_utils
-from ott.utils import web_utils
 from ott.utils import string_utils
 from ott.utils.cache_base import CacheBase
 
@@ -10,7 +8,6 @@ from .stats.osm_info import OsmInfo
 from .rename.osm_rename import OsmRename
 
 import os
-import re
 import logging
 log = logging.getLogger(__file__)
 
@@ -48,7 +45,7 @@ class OsmCache(CacheBase):
         meta_url = self.config.get('meta_url')
         self.pbf_tools = PbfTools(self.cache_dir, self.this_module_dir, pbf_url, meta_url)
 
-    def check_cached_osm(self, force_update=False):
+    def check_cached_osm(self, force_update=False, force_postprocessing=False):
         """
         if OSM .pbf file is out of date, download a new one.
         convert .pbf to .osm if .pbf file is newer than .osm file
@@ -87,7 +84,7 @@ class OsmCache(CacheBase):
             raise Exception(e)
 
         # step 4: other OSM processing steps on a new (fresh) .osm file
-        if is_updated:
+        if is_updated or force_postprocessing:
             OsmRename.rename(self.osm_path, do_bkup=False)
             OsmInfo.cache_stats(self.osm_path)
             self.pbf_tools.osm_to_pbf(self.osm_path)
@@ -131,12 +128,12 @@ class OsmCache(CacheBase):
         return ret_val
 
     @classmethod
-    def update(cls, force_update):
+    def update(cls, force_update, force_postprocessing=False):
         """ check OSM for freshness
         """
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         osm = OsmCache()
-        ret_val = osm.check_cached_osm(force_update)
+        ret_val = osm.check_cached_osm(force_update, force_postprocessing)
         return ret_val
 
     @classmethod

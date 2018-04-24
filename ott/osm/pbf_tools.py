@@ -46,7 +46,7 @@ class PbfTools(object):
             TODO need to check for .exe, them maybe download & install, finally need to test outputs ... make sure they're properly sized and have some necessary elements
         """
         # step 1: get osmosis binary path (for ux or dos, ala c:\\ in path will get you a .bin extension)
-        osmosis_dir = os.path.join(self.base_dir, "osmosis")
+        osmosis_dir = os.path.join(self.module_dir, "osmosis")
         osmosis_exe = os.path.join(osmosis_dir, "bin", "osmosis")
         if ":\\" in osmosis_exe:
             osmosis_exe = osmosis_exe + ".bat"
