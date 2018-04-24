@@ -191,11 +191,19 @@ class OsmCache(CacheBase):
     def is_configured(self):
         return self.osm_name and self.osm_path and self.pbf_name and self.pbf_path
 
+    def other_exports(self):
+        """ export other .osm files
+        """
+        exports = self.config.get_json('other_exports')
+        for e in exports:
+            in_path = os.path.join(self.cache_dir,  e['in'])
+            out_path = os.path.join(self.cache_dir, e['out'])
+            self.clip_to_bbox(input_path=in_path, output_path=out_path, bbox_ini_section=e['bbox'])
+
     @classmethod
     def update(cls, force_update):
         """ check OSM for freshness
         """
-        # import pdb; pdb.set_trace()
         ret_val = False
         osm = OsmCache()
         if osm.is_configured():
@@ -206,16 +214,7 @@ class OsmCache(CacheBase):
     def load(cls):
         """ run the SUM loader routines
         """
+        # import pdb; pdb.set_trace()
         osm = OsmCache()
         osm.check_cached_osm(force_update=object_utils.is_force_update())
-
-    @classmethod
-    def other_exports(cls):
-        """ export other .osm files
-        """
-        osm = OsmCache()
-        exports = osm.config.get_json('other_exports')
-        for e in exports:
-            in_path = os.path.join(osm.cache_dir,  e['in'])
-            out_path = os.path.join(osm.cache_dir, e['out'])
-            osm.clip_to_bbox(input_path=in_path, output_path=out_path, bbox_ini_section=e['bbox'])
+        # osm.other_exports() # testing
