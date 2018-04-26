@@ -44,7 +44,8 @@ class OsmCache(CacheBase):
         # step 3: pbf tools (for downloading new data from geofabrik, as well as converting the .pbf to our .osm)
         pbf_url = self.config.get('pbf_url')
         meta_url = self.config.get('meta_url')
-        self.pbf_tools = PbfTools(self.cache_dir, self.this_module_dir, pbf_url, meta_url)
+        osmosis_path = self.config.get('osmosis_path', os.path.join(self.this_module_dir, 'osmosis', 'bin', 'osmosis'))
+        self.pbf_tools = PbfTools(self.cache_dir, osmosis_path, pbf_url, meta_url)
 
     def check_cached_osm(self, force_update=False, force_postprocessing=False):
         """
