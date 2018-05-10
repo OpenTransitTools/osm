@@ -77,6 +77,10 @@ class PbfTools(object):
         osmosis_cmd = osmosis.format(osmosis_exe, osm_path, pbf_path)
         exe_utils.run_cmd(osmosis_cmd, shell=True)
 
+    @classmethod
+    def osm_to_pbf_cmdline(cls):
+        pass
+
     def pbf_to_osm(self, osm_path, pbf_path=None):
         """ use osmosis to convert .pbf to .osm file
         """

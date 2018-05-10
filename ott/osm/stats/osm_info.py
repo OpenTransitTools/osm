@@ -19,6 +19,7 @@ class OsmInfo(object):
         """
         self.way_count = 0
         self.highway_count = 0
+        self.osm_file = None
 
         class Last(object):
             timestamp = 0
@@ -38,6 +39,8 @@ class OsmInfo(object):
         """ reads the .osm file and captures certain stats like last update and number of ways, etc... 
         """
         log.info("calculating stats for {}".format(osm_path))
+        self.osm_file = osm_path
+
         for entity in parse_file(osm_path):
             if isinstance(entity, Way):
                 self.way_count += 1
@@ -127,7 +130,10 @@ class OsmInfo(object):
 
     @classmethod
     def get_cache_msgs(cls, cache_path, def_msg=""):
-        """return message for all OSM feeds in the cache directory """
+        """
+        return message for all OSM feeds in the cache directory
+        NOTE: this method could take hours to process, depending upon number & size of .osm files in a directory
+        """
         osm_msg = def_msg
         try:
             osm_files = OsmInfo.find_osm_files(cache_path)
@@ -141,11 +147,9 @@ class OsmInfo(object):
     def print_stats_via_config(cls):
         """ print stats from the .osm file that is config'd in the cache
         """
-        from .osm_cache import OsmCache
+        from ott.osm.osm_cache import OsmCache
         c = OsmCache()
         cls.print_stats(c.osm_path)
-        print ""
-        print OsmInfo.get_cache_msgs(c.cache_dir)
 
     @classmethod
     def print_stats(cls, osm_path):
