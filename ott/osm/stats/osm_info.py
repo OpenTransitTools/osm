@@ -14,7 +14,8 @@ class OsmInfo(object):
     Utility for getting stats on an osm file
     """
     def __init__(self):
-        """ TODO think about rewriting this to simply read file line by line and find latest stamps and count tags...
+        """
+        TODO think about rewriting this to simply read file line by line and find latest stamps and count tags...
         will be much faster than osmread on big files...
         """
         self.way_count = 0
@@ -139,7 +140,7 @@ class OsmInfo(object):
             osm_files = OsmInfo.find_osm_files(cache_path)
             for f in osm_files:
                 osm_msg += OsmInfo.get_osm_feed_msg(f)
-        except Exception, e:
+        except Exception as e:
             log.info(e)
         return osm_msg
 
@@ -150,7 +151,7 @@ class OsmInfo(object):
         try:
             s = OsmInfo.get_stats(osm_path)
             print json_utils.dict_to_json_str(s, pretty_print=True)
-        except Exception, e:
+        except Exception as e:
             log.error(e)
             if osm_path.endswith(('.osm', '.xml', '.osm.bz2', '.xml.bz2')) is False:
                 log.error("NOTE: your file should end with .osm or .xml")

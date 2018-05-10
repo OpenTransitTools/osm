@@ -137,7 +137,7 @@ class OsmCache(CacheBase):
                 cache_file = OsmInfo.get_stats_file_path(osm.osm_name)
                 osm.cp_cached_file(cache_file, app_dir)
                 ret_val = True
-        except Exception, e:
+        except Exception as e:
             log.warn(e)
         return ret_val
 
