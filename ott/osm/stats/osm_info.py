@@ -144,14 +144,6 @@ class OsmInfo(object):
         return osm_msg
 
     @classmethod
-    def print_stats_via_config(cls):
-        """ print stats from the .osm file that is config'd in the cache
-        """
-        from ott.osm.osm_cache import OsmCache
-        c = OsmCache()
-        cls.print_stats(c.osm_path)
-
-    @classmethod
     def print_stats(cls, osm_path):
         """ print stats from input file
         """
@@ -163,13 +155,25 @@ class OsmInfo(object):
             if osm_path.endswith(('.osm', '.xml', '.osm.bz2', '.xml.bz2')) is False:
                 log.error("NOTE: your file should end with .osm or .xml")
 
+    @classmethod
+    def print_stats_via_config(cls):
+        """
+        print stats from the .osm file that is config'd in the cache
+        """
+        from ott.osm.osm_cache import OsmCache
+        c = OsmCache()
+        cls.print_stats(c.osm_path)
+
+    @classmethod
+    def print_stats_via_cmdline(cls):
+        # import pdb; pdb.set_trace()
+        from ott.utils.parse.cmdline import osm_cmdline
+        p = osm_cmdline.osm_parser_args(prog_name='bin/osm_info', osm_required=True)
+        OsmInfo.print_stats(p.osm)
+
 
 def main():
-    # import pdb; pdb.set_trace()
-    from ott.utils.parse.cmdline import osm_cmdline
-    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_info', osm_required=True)
-    OsmInfo.print_stats(p.osm)
-
+    OsmInfo.print_stats_via_cmdline()
 
 if __name__ == '__main__':
     main()

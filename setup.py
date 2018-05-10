@@ -54,8 +54,9 @@ setup(
         [console_scripts]
         osm_update = ott.osm.osm_cache:OsmCache.load
         osm_to_pgsql = ott.osm.osm2pgsql.osm2pgsql:main
+        osm_to_pbf = ott.osm
+        osm_stats = ott.osm.stats.osm_info:OsmInfo.print_stats_via_cmdline
         osm_stats_cfg = ott.osm.stats.osm_info:OsmInfo.print_stats_via_config
-        osm_stats = ott.osm.stats.osm_info:main
         osm_rename = ott.osm.rename.osm_rename:main
         osm_intersections = ott.osm.intersections.osm_to_intersections:main
         osm_abbr_tester = ott.osm.tests.osm_abbr_tester:main
