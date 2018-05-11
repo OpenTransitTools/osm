@@ -15,30 +15,16 @@ class PbfTools(object):
     cache_dir = None
     osmosis_exe = None
 
-    pbf_url = None
-    pbf_name = None
-    pbf_path = None
+    def __init__(self, cache_dir=None, osmosis_exe=None):
+        if cache_dir is None:
+            this_dir = file_utils.get_module_dir(self.__class__)
+            cache_dir = os.path.join(this_dir, 'cache')
+        if osmosis_exe is None:
+            this_dir = file_utils.get_module_dir(self.__class__)
+            osmosis_exe = os.path.join(this_dir, 'osmosis/bin/osmosis')
 
-    meta_url = None
-    meta_name = None
-    meta_path = None
-
-    def __init__(self, cache_dir, osmosis_exe, pbf_url, meta_url):
-        """
-        """
-        # step 1: basic vars
         self.cache_dir = cache_dir
         self.osmosis_exe = osmosis_exe
-
-        # step 2: .pbf (geofabrik source) urls, file paths and name
-        self.pbf_url = pbf_url
-        self.pbf_name = web_utils.get_name_from_url(self.pbf_url)
-        self.pbf_path = string_utils.safe_path_join(self.cache_dir, self.pbf_name)
-
-        # step 3: meta data (geofabrik has an .html file) urls, file paths and name
-        self.meta_url = meta_url
-        self.meta_name = web_utils.get_name_from_url(self.meta_url)
-        self.meta_path = string_utils.safe_path_join(self.cache_dir, self.meta_name)
 
     def check_osmosis_exe(self):
         """ get the path osmosis binary
@@ -56,6 +42,21 @@ class PbfTools(object):
             raise Exception(e)
         return osmosis_exe
 
+    @classmethod
+    def name_path_from_url(cls, url, cache_dir):
+        name = web_utils.get_name_from_url(url)
+        path = string_utils.safe_path_join(cache_dir, name)
+        return name, path
+
+    def download_pbf(self, pbf_url, meta_url=None):
+        name, path = self.name_path_from_url(pbf_url, self.cache_dir)
+        log.info("wget {} to {}".format(pbf_url, path))
+        file_utils.bkup(path)
+        web_utils.wget(pbf_url, path)
+        if meta_url:
+            name, path = self.name_path_from_url(meta_url, self.cache_dir)
+            web_utils.wget(meta_url, path)
+
     def clip_to_bbox(self, input_path, output_path, top, bottom, left, right):
         """ use osmosis to clip a bbox out of a .pbf, and output .osm file
             (file paths derrived by the cache paths & config)
@@ -65,6 +66,16 @@ class PbfTools(object):
         osmosis = "{} --rb {} --bounding-box top={} bottom={} left={} right={} completeWays=true --wx {}"
         osmosis_cmd = osmosis.format(osmosis_exe, input_path, top, bottom, left, right, output_path)
         log.info(osmosis_cmd)
+        exe_utils.run_cmd(osmosis_cmd, shell=True)
+
+    def pbf_to_osm(self, osm_path, pbf_path=None):
+        """ use osmosis to convert .pbf to .osm file
+        """
+        if pbf_path is None:
+            pbf_path = re.sub('.osm$', '', osm_path) + ".pbf"
+        osmosis_exe = self.check_osmosis_exe()
+        osmosis = '{} --read-pbf {} --write-xml {}'
+        osmosis_cmd = osmosis.format(osmosis_exe, pbf_path, osm_path)
         exe_utils.run_cmd(osmosis_cmd, shell=True)
 
     def osm_to_pbf(self, osm_path, pbf_path=None):
@@ -79,24 +90,7 @@ class PbfTools(object):
 
     @classmethod
     def osm_to_pbf_cmdline(cls):
-        pass
-
-    def pbf_to_osm(self, osm_path, pbf_path=None):
-        """ use osmosis to convert .pbf to .osm file
-        """
-        if pbf_path is None:
-            pbf_path = re.sub('.osm$', '', osm_path) + ".pbf"
-        osmosis_exe = self.check_osmosis_exe()
-        osmosis = '{} --read-pbf {} --write-xml {}'
-        osmosis_cmd = osmosis.format(osmosis_exe, pbf_path, osm_path)
-        exe_utils.run_cmd(osmosis_cmd, shell=True)
-
-    def download_pbf(self):
-        log.info("wget {} to {}".format(self.pbf_url, self.pbf_path))
-        file_utils.bkup(self.pbf_path)
-        web_utils.wget(self.pbf_url, self.pbf_path)
-        if self.meta_url:
-            web_utils.wget(self.meta_url, self.meta_path)
-
-    def is_configured(self):
-        return len(self.pbf_name) > 0 and len(self.pbf_path) > 0
+        from ott.utils.parse.cmdline import osm_cmdline
+        p = osm_cmdline.osm_parser_args(prog_name='bin/osm_to_pbf', osm_required=True)
+        pbf = PbfTools()
+        pbf.osm_to_pbf(p.osm, p.pbf)

@@ -54,7 +54,7 @@ setup(
         [console_scripts]
         osm_update = ott.osm.osm_cache:OsmCache.load
         osm_to_pgsql = ott.osm.osm2pgsql.osm2pgsql:main
-        osm_to_pbf = ott.osm
+        osm_to_pbf = ott.osm.pbf_tools:PbfTools.osm_to_pbf_cmdline
         osm_stats = ott.osm.stats.osm_info:OsmInfo.print_stats_via_cmdline
         osm_stats_cfg = ott.osm.stats.osm_info:OsmInfo.print_stats_via_config
         osm_rename = ott.osm.rename.osm_rename:main

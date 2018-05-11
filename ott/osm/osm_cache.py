@@ -63,6 +63,7 @@ class OsmCache(CacheBase):
         fresh = self.is_fresh_in_cache(self.pbf_tools.pbf_path)
         sized = file_utils.is_min_sized(self.pbf_tools.pbf_path, min_size)
         if force_update or not fresh or not sized:
+
             self.pbf_tools.download_pbf()
             is_updated = True
 

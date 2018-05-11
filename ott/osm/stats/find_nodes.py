@@ -29,6 +29,12 @@ class FindNodes(object):
         pass
 
 
+    @classmethod
+    def find_park_and_rides(cls):
+        """ will find park & ride stuff """
+        pass
+
+
 def main():
     # import pdb; pdb.set_trace()
     from ott.utils.parse.cmdline import osm_cmdline
