@@ -27,9 +27,10 @@ class PbfTools(object):
         self.osmosis_exe = osmosis_exe
 
     def check_osmosis_exe(self):
-        """ get the path osmosis binary
-            TODO - we should look for system installed osmosis first
-            TODO need to check for .exe, them maybe download & install, finally need to test outputs ... make sure they're properly sized and have some necessary elements
+        """
+        get the path osmosis binary
+        TODO - we should look for system installed osmosis first
+        TODO need to check for .exe, them maybe download & install, finally need to test outputs ... make sure they're properly sized and have some necessary elements
         """
         # step 1: see if osmosis binary path looks like windows (for ux or dos, ala c:\\ in path will get you a .bin extension)
         osmosis_exe = self.osmosis_exe
@@ -54,12 +55,12 @@ class PbfTools(object):
         return path
 
     def download_pbf(self, pbf_url, meta_url=None):
-        pbf_path = self.name_path_from_url(pbf_url, self.cache_dir)
+        pbf_path = self.path_from_url(pbf_url, self.cache_dir)
         log.info("wget {} to {}".format(pbf_url, pbf_path))
-        file_utils.bkup(path)
-        web_utils.wget(pbf_url, path)
+        file_utils.bkup(pbf_path)
+        web_utils.wget(pbf_url, pbf_path)
         if meta_url:
-            meta_path = self.name_path_from_url(meta_url, self.cache_dir)
+            meta_path = self.path_from_url(meta_url, self.cache_dir)
             web_utils.wget(meta_url, meta_path)
 
     def clip_to_bbox(self, input_path, output_path, top, bottom, left, right):
