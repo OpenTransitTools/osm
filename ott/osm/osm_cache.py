@@ -42,10 +42,8 @@ class OsmCache(CacheBase):
         self.osm_path = string_utils.safe_path_join(self.cache_dir, self.osm_name)
 
         # step 3: pbf tools (for downloading new data from geofabrik, as well as converting the .pbf to our .osm)
-        pbf_url = self.config.get('pbf_url')
-        meta_url = self.config.get('meta_url')
         osmosis_path = self.config.get('osmosis_path', def_val=os.path.join(self.this_module_dir, 'osmosis', 'bin', 'osmosis'))
-        self.pbf_tools = PbfTools(self.cache_dir, osmosis_path, pbf_url, meta_url)
+        self.pbf_tools = PbfTools(self.cache_dir, osmosis_path)
 
     def check_cached_osm(self, force_update=False, force_postprocessing=False):
         """
@@ -58,24 +56,26 @@ class OsmCache(CacheBase):
         is_updated = force_update
 
         min_size = self.config.get_int('min_size', def_val=100000)
+        pbf_url = self.config.get('pbf_url')
+        pbf_path = self.pbf_tools.path_from_url(pbf_url, self.cache_dir)
 
         # step 1: download new osm pbf file if it's not new
-        fresh = self.is_fresh_in_cache(self.pbf_tools.pbf_path)
-        sized = file_utils.is_min_sized(self.pbf_tools.pbf_path, min_size)
+        fresh = self.is_fresh_in_cache(pbf_path)
+        sized = file_utils.is_min_sized(pbf_path, min_size)
         if force_update or not fresh or not sized:
-
-            self.pbf_tools.download_pbf()
+            meta_url = self.config.get('meta_url')
+            self.pbf_tools.download_pbf(pbf_url, meta_url)
             is_updated = True
 
         # step 2: .pbf to .osm
-        if not file_utils.is_min_sized(self.pbf_tools.pbf_path, min_size):
-            log.warn("OSM PBF file {} is not big enough".format(self.pbf_tools.pbf_path))
+        if not file_utils.is_min_sized(pbf_path, min_size):
+            log.warn("OSM PBF file {} is not big enough".format(pbf_path))
         else:
             fresh = self.is_fresh_in_cache(self.osm_path)
             sized = file_utils.is_min_sized(self.osm_path, min_size)
-            pbf_newer = file_utils.is_a_newer_than_b(self.pbf_tools.pbf_path, self.osm_path, offset_minutes=10)
+            pbf_newer = file_utils.is_a_newer_than_b(pbf_path, self.osm_path, offset_minutes=10)
             if is_updated or pbf_newer or not fresh or not sized:
-                self.pbf_tools.clip_to_bbox(self.pbf_tools.pbf_path, self.osm_path, self.top, self.bottom, self.left, self.right)
+                self.pbf_tools.clip_to_bbox(pbf_path, self.osm_path, self.top, self.bottom, self.left, self.right)
                 is_updated = True
             else:
                 is_updated = False
@@ -104,7 +104,7 @@ class OsmCache(CacheBase):
             self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
 
     def is_configured(self):
-        return len(self.osm_name) > 0 and len(self.osm_path) > 0 and self.pbf_tools.is_configured()
+        return len(self.osm_name) > 0 and len(self.osm_path) > 0
 
     def get_bbox(self, format='str'):
         """

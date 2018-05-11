@@ -48,14 +48,19 @@ class PbfTools(object):
         path = string_utils.safe_path_join(cache_dir, name)
         return name, path
 
+    @classmethod
+    def path_from_url(cls, url, cache_dir):
+        name, path = cls.name_path_from_url(url, cache_dir)
+        return path
+
     def download_pbf(self, pbf_url, meta_url=None):
-        name, path = self.name_path_from_url(pbf_url, self.cache_dir)
-        log.info("wget {} to {}".format(pbf_url, path))
+        pbf_path = self.name_path_from_url(pbf_url, self.cache_dir)
+        log.info("wget {} to {}".format(pbf_url, pbf_path))
         file_utils.bkup(path)
         web_utils.wget(pbf_url, path)
         if meta_url:
-            name, path = self.name_path_from_url(meta_url, self.cache_dir)
-            web_utils.wget(meta_url, path)
+            meta_path = self.name_path_from_url(meta_url, self.cache_dir)
+            web_utils.wget(meta_url, meta_path)
 
     def clip_to_bbox(self, input_path, output_path, top, bottom, left, right):
         """ use osmosis to clip a bbox out of a .pbf, and output .osm file
