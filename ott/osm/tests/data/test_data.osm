@@ -19,6 +19,29 @@
     <tag k="internet_access:fee" v="no"/>
   </node>
 
+
+  <node id="2825601233" version="4" timestamp="2015-09-14T04:33:57Z" uid="0" user="" lat="45.5066419" lon="-122.6630177">
+    <tag k="ref" v="13727"/>
+    <tag k="name" v="OMSI/Southeast Water"/>
+    <tag k="network" v="Metropolitan Area Express"/>
+    <tag k="railway" v="tram_stop"/>
+    <tag k="operator" v="Tri-County Metropolitan Transit of Oregon"/>
+    <tag k="light_rail" v="yes"/>
+    <tag k="public_transport" v="stop_position"/>
+  </node>
+
+  <way id="370524384" version="4" timestamp="2016-01-05T02:40:52Z" uid="0" user="">
+    <nd ref="3742183370"/>
+    <nd ref="2991500202"/>
+    <tag k="bus" v="yes"/>
+    <tag k="ref" v="13773"/>
+    <tag k="name" v="OMSI/Southeast Water"/>
+    <tag k="highway" v="footway"/>
+    <tag k="surface" v="concrete"/>
+    <tag k="description" v="OMSI/SE Water MAX Station"/>
+    <tag k="public_transport" v="platform"/>
+  </way>
+
   <way id="5519763" version="32" timestamp="2016-05-27T18:46:57Z" uid="81676" user="Peter Dobratz" changeset="39610835">
     <nd ref="40496549"/>
     <nd ref="1410228108"/>
