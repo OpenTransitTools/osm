@@ -59,8 +59,6 @@ class OsmInfo(object):
         # if available, add the changeset url
         if self.last.changeset > 0:
             self.last.changeset_url = "http://openstreetmap.org/changeset/{}".format(self.last.changeset)
-        else:
-            self.last.changeset = "Unknown (GeoFabrik public probably)"
 
     @classmethod
     def find_osm_files(cls, dir_path):
@@ -126,17 +124,33 @@ class OsmInfo(object):
         return ret_val
 
     @classmethod
-    def get_osm_feed_msg(cls, file_path, prefix=" ", suffix="\n"):
+    def get_osm_feed_msg(cls, file_path, prefix=" ", suffix="\n", detailed=False):
         """ get osm feed details msg string for the .v log file
         """
+        # step 1: get stats and .osm file name
         file_name = file_utils.get_file_name_from_path(file_path)
         stats = OsmInfo.get_stats(file_path)
-        msg = "{}{} : file date: {} -- last OSM update: {}, changeset {}{}"\
-            .format(prefix, file_name, stats['last'].get('file_date'), stats['last'].get('edit_date'), stats['last'].get('changeset'), suffix)
+
+        # step 2: make up base message with file name and file / last edit dates
+        msg = "{}{} : file date = {} -- last OSM update = {}".format(prefix, file_name, stats['last'].get('file_date'), stats['last'].get('edit_date'))
+
+        # step 3: add details like changesets, etc...
+        if detailed:
+            cs = stats['last'].get('changeset', 0)
+            if cs > 111:
+                msg = "{}, changeset: {}".format(msg, cs)
+                url = stats['last'].get('changeset_url')
+                if url:
+                    msg = "{} @ {}".format(msg, url)
+            else:
+                msg = "{} (NOTE: there is no 'changeset' info -- probably Geofabrik data)".format(msg)
+
+        # step 4: end the message and return it
+        msg = msg + suffix
         return msg
 
     @classmethod
-    def get_cache_msgs(cls, cache_path, def_msg=""):
+    def get_cache_msgs(cls, cache_path='.', def_msg="", detailed=False):
         """
         return message for all OSM feeds in the cache directory
         NOTE: this method could take hours to process, depending upon number & size of .osm files in a directory
@@ -145,7 +159,7 @@ class OsmInfo(object):
         try:
             osm_files = OsmInfo.find_osm_files(cache_path)
             for f in osm_files:
-                osm_msg += OsmInfo.get_osm_feed_msg(f)
+                osm_msg += OsmInfo.get_osm_feed_msg(file_path=f, detailed=detailed)
         except Exception as e:
             log.info(e)
         return osm_msg
@@ -177,6 +191,7 @@ class OsmInfo(object):
         from ott.utils.parse.cmdline import osm_cmdline
         p = osm_cmdline.osm_parser_args(prog_name='bin/osm_info', osm_required=True)
         OsmInfo.print_stats(p.osm)
+        print OsmInfo.get_cache_msgs(p.osm, detailed=True)
 
 
 def main():
