@@ -42,6 +42,7 @@ class OsmInfo(object):
         log.info("calculating stats for {}".format(osm_path))
         self.osm_file = osm_path
 
+        # import pdb; pdb.set_trace()
         for entity in parse_file(osm_path):
             if isinstance(entity, Way):
                 self.way_count += 1
@@ -49,12 +50,17 @@ class OsmInfo(object):
                     self.highway_count += 1
                 if entity.timestamp > self.last.timestamp:
                     self.last.timestamp = entity.timestamp
-                    self.last.changeset = entity.changeset
+                    if entity.changeset > 0:
+                        self.last.changeset = entity.changeset
 
-        # clean up data
-        self.last.changeset_url = "http://openstreetmap.org/changeset/{}".format(self.last.changeset)
         self.last.edit_date = date_utils.pretty_date_from_ms(self.last.timestamp * 1000, fmt="%B %d, %Y")
         self.last.file_date = file_utils.file_pretty_date(osm_path, fmt="%B %d, %Y")
+
+        # if available, add the changeset url
+        if self.last.changeset > 0:
+            self.last.changeset_url = "http://openstreetmap.org/changeset/{}".format(self.last.changeset)
+        else:
+            self.last.changeset = "Unknown (GeoFabrik public probably)"
 
     @classmethod
     def find_osm_files(cls, dir_path):
