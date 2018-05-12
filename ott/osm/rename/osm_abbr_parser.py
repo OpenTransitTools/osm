@@ -9,13 +9,11 @@ import logging
 log = logging.getLogger(__file__)
 
 
-
 class OsmAbbrParser(object):
     """
     Convert long OSM types and directions to their proper abbreviated forms
     """
     this_module_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
 
     def __init__(self):
         """
@@ -38,8 +36,13 @@ class OsmAbbrParser(object):
         prefix = Combine(StringStart() + MatchFirst(dt) + Optional(" ") + Optional(".").suppress())
         suffix = Combine(OneOrMore(MatchFirst(dt) + Optional(".").suppress()) + StringEnd())
 
-        name_chars = nums + alphas + "-" + "." + "," + u"á" + u"é" + "." + "'" + '"' + "&" + ";" + ":" + "#" + "@" + "(" + ")"
-        name_string = Word(name_chars) 
+        # NOTE: add chars here to allow these chars in a name / address without breaking the string (e.g., OMSI/SE)
+        name_chars = nums + alphas + u"á" + u"é" + u"¿" \
+                     "|" + "." + "," + "." + "'" + '"' + "&" + ";" + ":" + "#" + "@" + \
+                     "(" + ")" + "[" + "]" + "<" + ">" + "{" + "}" "/" + "\\" + "-" + "_" \
+                     "$" + "%" + "!" + "^" + "*" + "?" + "+" + "=" + "~" + "`"
+
+        name_string = Word(name_chars)
         street_name = (
                        Combine( 
                             OneOrMore(
@@ -47,7 +50,7 @@ class OsmAbbrParser(object):
                                  |
                                  ~type_ + ~suffix + name_string
                                  |
-                                 type_  + FollowedBy(name_string) + FollowedBy(~suffix)
+                                 type_ + FollowedBy(name_string) + FollowedBy(~suffix)
                                  ), joinString=" ", adjacent=False)
                      ).setName("streetName")
 
@@ -93,11 +96,11 @@ class OsmAbbrParser(object):
                 r['prefix'] = d['prefix']
                 r['suffix'] = d['suffix']
             else:
-               p = self.streetAddress.parseString(s)
-               r['name'] = p.name
-               r['type'] = self.find_replace(self.street_types, p.type)
-               r['suffix'] = self.find_replace(self.dir_types,    p.suffix)
-               r['prefix'] = self.find_replace(self.dir_types,    p.prefix)
+                p = self.streetAddress.parseString(s)
+                r['name'] = p.name
+                r['type'] = self.find_replace(self.street_types, p.type)
+                r['suffix'] = self.find_replace(self.dir_types,    p.suffix)
+                r['prefix'] = self.find_replace(self.dir_types,    p.prefix)
 
         return ret_val
 
@@ -113,6 +116,7 @@ class OsmAbbrParser(object):
                          label: TRUE (or FALSE)
                        }
         """
+        # import pdb; pdb.set_trace()
         ret_val = None
 
         try:
@@ -132,9 +136,10 @@ class OsmAbbrParser(object):
     def to_str(self, orig):
         ret_val = orig
         try:
+            #if "OMSI" in orig: import pdb; pdb.set_trace()
             f = self.dict(orig)
             if f and len(f['label_text']) > 0:
-                ret_val = f['label_text']
+                ret_val = f['label_text'].replace("<", "%3C").replace(">", "%3E")
         except Exception as e:
             log.debug(e)
         return ret_val
@@ -234,7 +239,6 @@ class OsmAbbrParser(object):
         l = []
         for row in reader:
             row['str'] = row['str'].decode('utf-8')  # csv read adds strange utf8 pre-character \xc3 ... this removes that character
-            # import pdb; pdb.set_trace()
             strings += row['str'] + " " + row['replace'] + " "
             l.append(row)
 

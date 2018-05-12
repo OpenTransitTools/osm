@@ -7,7 +7,8 @@
     <nd ref="2991500202"/>
     <tag k="bus" v="yes"/>
     <tag k="ref" v="13773"/>
-    <tag k="name" v="OMSI/Southeast Water"/>
+    <tag k="name" v="OMSI/Southeast|A[B]C$D!E@F%G^H\I*J(K)L_M-N+L=M|N?0.P/QR>S.T,U~V`W&lt;X&gt;%3CX%3EY!Z{á}¿é?/Northwest OMSI"/>
+    <tag k="name" v="834 Northeast OMSI/Southeast|A[B]C$D!E@F%G^H\I*J(K)L_M-N+L=M|N?0.P/QR>S.T,U~V`W&lt;X>Y!Z{á}¿é?/Northwest OMSI Street"/>
     <tag k="highway" v="footway"/>
     <tag k="surface" v="concrete"/>
     <tag k="description" v="OMSI/SE Water MAX Station"/>
@@ -16,7 +17,7 @@
 
   <node id="2825601233" version="4" timestamp="2015-09-14T04:33:57Z" uid="0" user="" lat="45.5066419" lon="-122.6630177">
     <tag k="ref" v="13727"/>
-    <tag k="name" v="OMSI/Southeast Water"/>
+    <tag k="name" v="OMSI/Southeast\Water"/>
     <tag k="network" v="Metropolitan Area Express"/>
     <tag k="railway" v="tram_stop"/>
     <tag k="operator" v="Tri-County Metropolitan Transit of Oregon"/>
@@ -32,7 +33,7 @@
     <nd ref="1391266409"/>
     <nd ref="1222278580"/>
     <nd ref="1504554286"/>
-    <tag k="name" v="OMSI/Southeast Water"/>
+    <tag k="name" v="OMSI/Southeast\Water/XXX\YYY/ZZZ"/>
     <tag k="lanes" v="2"/>
     <tag k="oneway" v="yes"/>
     <tag k="bicycle" v="yes"/>
