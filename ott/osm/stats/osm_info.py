@@ -197,5 +197,6 @@ class OsmInfo(object):
 def main():
     OsmInfo.print_stats_via_cmdline()
 
+
 if __name__ == '__main__':
     main()
