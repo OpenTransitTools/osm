@@ -100,38 +100,57 @@ def extract_intersections(osm):
         names_d = get_names_from_way_list(road_ways[z])
         names = names_d.values()
         if len(names) < 2:
-            # print names
+            # print(names)
             pass
         else:
             coordinate = n.attrib['lat'] + ',' + n.attrib['lon']
             two_names_list = itertools.combinations(names, 2)
             for t in two_names_list:
                 ret_val[t] = coordinate
-        if i % 5000 == 0: sys.stderr.write('#')
+        if i % 5000 == 0:
+            sys.stderr.write('#')
 
     """
-    print "num raw intersections: {}, num named intersections: {}".format(raw_intersection_count, len(ret_val))
+    print("num raw intersections: {}, num named intersections: {}".format(raw_intersection_count, len(ret_val)))
     """
     return ret_val
 
 
-def get_test_data():
-    dir = file_utils.get_file_dir(__file__)
-    dir = file_utils.get_parent_dir(dir)
-    file = os.path.join(dir, 'tests', 'data', 'portland.osm')
-    return file
+def to_csv(intersections):
+    print "hi"
+
+
+def cmd_parser(name='bin/osm_intersetions'):
+    from ott.utils.parse.cmdline import osm_cmdline
+    parser = osm_cmdline.osm_parser(prog_name=name, osm_required=False)
+    parser.add_argument(
+        '--pelias',
+        '--csv',
+        '-c',
+        required=False,
+        help=".csv file output (Pelias format)"
+    )
+    return parser.parse_args()
 
 
 def main():
-    from ott.utils.parse.cmdline import osm_cmdline
-    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions', osm_required=False)
+    def get_test_data():
+        dir = file_utils.get_file_dir(__file__)
+        dir = file_utils.get_parent_dir(dir)
+        file = os.path.join(dir, 'tests', 'data', 'portland.osm')
+        return file
+
+    p = cmd_parser()
     osm_file = p.osm
     if osm_file is None:
         osm_file = get_test_data()
 
     intersections = extract_intersections(osm_file)
-    for i in intersections:
-        print i, intersections[i]
+    if p.pelias:
+        to_csv(intersections)
+    else:
+        for i in intersections:
+            print(i, intersections[i])
 
 
 if __name__ == '__main__':
