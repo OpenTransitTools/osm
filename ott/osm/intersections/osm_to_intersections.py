@@ -4,6 +4,7 @@
 """
 import os
 import sys
+import csv
 import itertools
 
 from ott.utils import file_utils
@@ -116,8 +117,35 @@ def extract_intersections(osm):
     return ret_val
 
 
-def to_csv(intersections):
-    print "hi"
+def intersection_tuple_to_record(names_tuple, coord_string, def_val={}):
+    """
+
+    names_tuple = ('SW Tyrol St', 'SW 18th Pl')  --- this is the i from looping intersections
+    coord_string = '45.487563,-122.6989328' --- this is the intersections[i]
+    """
+    ret_val = def_val
+    try:
+        ll = coord_string.split(',')
+        ret_val['name'] = "{} and {}".format(names_tuple[0], names_tuple[1])
+        ret_val['lon'] = float(ll[1])
+        ret_val['lat'] = float(ll[0])
+        valid = True
+    except:
+        valid = False
+    return ret_val, valid
+
+
+def to_csv(intersections, csv_file_path):
+
+    with open(csv_file_path, mode='w') as csv_file:
+        fieldnames = ['id', 'name', 'address', 'zipcode', 'lon', 'lat', 'layer_id']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for n, i in enumerate(intersections):
+            rec = {'id': n, 'layer_id': 'intersections'}
+            rec,is_valid = intersection_tuple_to_record(i, intersections[i], rec)
+            if is_valid:
+                writer.writerow(rec)
 
 
 def cmd_parser(name='bin/osm_intersetions'):
@@ -147,9 +175,10 @@ def main():
 
     intersections = extract_intersections(osm_file)
     if p.pelias:
-        to_csv(intersections)
+        to_csv(intersections, p.pelias)
     else:
         for i in intersections:
+            #import pdb; pdb.set_trace()
             print(i, intersections[i])
 
 

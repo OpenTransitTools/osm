@@ -20,7 +20,8 @@ requires = [
 
 # sys (not windows) dependant dependencies
 if sys.platform == "darwin" or "win" not in sys.platform:
-    requires.append('imposm')
+    pass
+    #requires.append('imposm')
 
 extras_require = dict(
     dev=[],
