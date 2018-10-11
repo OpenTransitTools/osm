@@ -18,6 +18,7 @@ bkup
 *.obj
 *.out
 *.pid
+*.csv
 call/
 call-test/
 prod/
