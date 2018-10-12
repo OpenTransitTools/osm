@@ -96,7 +96,8 @@ class OsmCache(CacheBase):
         return is_updated
 
     def other_exports(self):
-        """ export other .osm files
+        """
+        export other .osm files
         """
         exports = self.config.get_json('other_exports')
         for e in exports:
@@ -106,6 +107,9 @@ class OsmCache(CacheBase):
             self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
 
     def intersections_export(self):
+        """
+        generate intersections .csv from the configured main .osm file (e.g., or-wa.osm)
+        """
         intersections = self.config.get_json('intersections')
         if intersections:
             csv_path = os.path.join(self.cache_dir, intersections)
