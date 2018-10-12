@@ -6,6 +6,7 @@ from ott.utils.cache_base import CacheBase
 from .pbf_tools import PbfTools
 from .stats.osm_info import OsmInfo
 from .rename.osm_rename import OsmRename
+from .intersections.osm_to_intersections import osm_to_intersections
 
 import os
 import logging
@@ -91,6 +92,7 @@ class OsmCache(CacheBase):
             OsmInfo.cache_stats(self.osm_path)
             self.pbf_tools.osm_to_pbf(self.osm_path)
             self.other_exports()
+            self.intersections_export()
         return is_updated
 
     def other_exports(self):
@@ -98,10 +100,16 @@ class OsmCache(CacheBase):
         """
         exports = self.config.get_json('other_exports')
         for e in exports:
-            in_path = os.path.join(self.cache_dir,  e['in'])
+            in_path = os.path.join(self.cache_dir, e['in'])
             out_path = os.path.join(self.cache_dir, e['out'])
             top, bottom, left, right = self.config.get_bbox(e['bbox'])
             self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
+
+    def intersections_export(self):
+        intersections = self.config.get_json('intersections')
+        if intersections:
+            csv_path = os.path.join(self.cache_dir, intersections)
+            osm_to_intersections(self.osm_path, csv_path)
 
     def is_configured(self):
         return len(self.osm_name) > 0 and len(self.osm_path) > 0
@@ -157,3 +165,11 @@ class OsmCache(CacheBase):
         """
         ret_val = cls.update(force_update=object_utils.is_force_update())
         return ret_val
+
+    @classmethod
+    def intersections_cache(cls):
+        """
+        generate .csv from cached .osm file
+        """
+        c = OsmCache()
+        c.intersections_export()

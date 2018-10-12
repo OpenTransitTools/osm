@@ -19,30 +19,29 @@ tot_proc = 0
 num_proc = 0
 
 
-def get_names_from_way_list(way_list):
-    # import pdb; pdb.set_trace()
-    global num_proc
-    global tot_proc
-    ret_val = {}
-    try:
-        for w in way_list:
-            num_proc += 1
-            tot_proc += 1
-            for c in w:
-                if c.tag == 'tag' and 'k' in c.attrib and c.attrib['k'] == 'name':
-                    if 'v' in c.attrib and len(c.attrib['v']) > 0:
-                        ret_val[c.attrib['v']] = c.attrib['v']
-    except Exception as e:
-        pass
-    return ret_val
-
-
 def extract_intersections(osm):
     """
     This method reads the passed osm file (xml) and finds intersections (nodes that are shared by two or more roads)
     :param osm: An osm file or a string from get_osm()
     """
     ret_val = {}
+
+    def get_names_from_way_list(way_list):
+        # import pdb; pdb.set_trace()
+        global num_proc
+        global tot_proc
+        ret_val = {}
+        try:
+            for w in way_list:
+                num_proc += 1
+                tot_proc += 1
+                for c in w:
+                    if c.tag == 'tag' and 'k' in c.attrib and c.attrib['k'] == 'name':
+                        if 'v' in c.attrib and len(c.attrib['v']) > 0:
+                            ret_val[c.attrib['v']] = c.attrib['v']
+        except Exception as e:
+            pass
+        return ret_val
 
     # step 1: parse either XML string or file
     if '<' in osm and '>' in osm:
@@ -119,6 +118,7 @@ def extract_intersections(osm):
 
 def intersection_tuple_to_record(names_tuple, coord_string, def_val={}):
     """
+    turns an intersection record created above in extract_intersections() into a dict
 
     names_tuple = ('SW Tyrol St', 'SW 18th Pl')  --- this is the i from looping intersections
     coord_string = '45.487563,-122.6989328' --- this is the intersections[i]
@@ -136,7 +136,11 @@ def intersection_tuple_to_record(names_tuple, coord_string, def_val={}):
 
 
 def to_csv(intersections, csv_file_path):
-
+    """
+    turn list returned by extract_intersections() into a .csv file
+    note: the output format follows pelias transit .csv format (Oct 2018)
+          format may change for generic pelias .csv reader
+    """
     with open(csv_file_path, mode='w') as csv_file:
         fieldnames = ['id', 'name', 'address', 'zipcode', 'lon', 'lat', 'layer_id']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
@@ -148,17 +152,12 @@ def to_csv(intersections, csv_file_path):
                 writer.writerow(rec)
 
 
-def cmd_parser(name='bin/osm_intersetions'):
-    from ott.utils.parse.cmdline import osm_cmdline
-    parser = osm_cmdline.osm_parser(prog_name=name, osm_required=False)
-    parser.add_argument(
-        '--pelias',
-        '--csv',
-        '-c',
-        required=False,
-        help=".csv file output (Pelias format)"
-    )
-    return parser.parse_args()
+def osm_to_intersections(osm_file, csv_output_path):
+    """ the 'main' routine to collect intersection from input .osm file and output to a csv file """
+    intersections = extract_intersections(osm_file)
+    if csv_output_path:
+        to_csv(intersections, csv_output_path)
+    return intersections
 
 
 def main():
@@ -168,15 +167,25 @@ def main():
         file = os.path.join(dir, 'tests', 'data', 'portland.osm')
         return file
 
+    def cmd_parser(name='bin/osm_intersetions'):
+        from ott.utils.parse.cmdline import osm_cmdline
+        parser = osm_cmdline.osm_parser(prog_name=name, osm_required=False)
+        parser.add_argument(
+            '--pelias',
+            '--csv',
+            '-c',
+            required=False,
+            help=".csv file output (Pelias format)"
+        )
+        return parser.parse_args()
+
     p = cmd_parser()
     osm_file = p.osm
     if osm_file is None:
         osm_file = get_test_data()
 
-    intersections = extract_intersections(osm_file)
-    if p.pelias:
-        to_csv(intersections, p.pelias)
-    else:
+    intersections = osm_to_intersections(osm_file, p.pelias)
+    if p.pelias is None:
         for i in intersections:
             #import pdb; pdb.set_trace()
             print(i, intersections[i])
