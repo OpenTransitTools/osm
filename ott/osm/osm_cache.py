@@ -95,12 +95,14 @@ class OsmCache(CacheBase):
             self.intersections_export()
         return is_updated
 
-    def other_exports(self):
+    def other_exports(self, name=None):
         """
         export other .osm files
         """
         exports = self.config.get_json('other_exports')
         for e in exports:
+            if name and name not in e['out']:
+                continue
             in_path = os.path.join(self.cache_dir, e['in'])
             out_path = os.path.join(self.cache_dir, e['out'])
             top, bottom, left, right = self.config.get_bbox(e['bbox'])
@@ -177,3 +179,16 @@ class OsmCache(CacheBase):
         """
         c = OsmCache()
         c.intersections_export()
+
+    @classmethod
+    def exports(cls):
+        """
+        generate other .osm file(s)
+        :exmple:  bin/osm_other_exports hills
+        :example: bin/osm_intersections -o ott/osm/cache/hillsboro.osm | grep -i cherr
+        :see: https://ws-st.trimet.org/pelias/v1/search?sources=osm,oa,transit&text=NE%20Century%20%26%20NE%20Cherry
+        """
+        import sys
+        name = sys.argv[1] if len(sys.argv) > 1 else None
+        c = OsmCache()
+        c.other_exports(name)
