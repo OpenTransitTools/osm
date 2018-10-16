@@ -116,7 +116,7 @@ def extract_intersections(osm):
     return ret_val
 
 
-def intersection_tuple_to_record(names_tuple, coord_string, def_val={}):
+def intersection_tuple_to_record(names_tuple, coord_string, separator='&', def_val={}):
     """
     turns an intersection record created above in extract_intersections() into a dict
 
@@ -126,11 +126,11 @@ def intersection_tuple_to_record(names_tuple, coord_string, def_val={}):
     ret_val = def_val
     try:
         ll = coord_string.split(',')
-        ret_val['name'] = "{} and {}".format(names_tuple[0], names_tuple[1])
+        ret_val['name'] = "{} {} {}".format(names_tuple[0], separator, names_tuple[1])
         ret_val['lon'] = float(ll[1])
         ret_val['lat'] = float(ll[0])
         valid = True
-    except:
+    except Exception as e:
         valid = False
     return ret_val, valid
 
@@ -147,7 +147,7 @@ def to_csv(intersections, csv_file_path):
         writer.writeheader()
         for n, i in enumerate(intersections):
             rec = {'id': n, 'layer_id': 'intersections'}
-            rec,is_valid = intersection_tuple_to_record(i, intersections[i], rec)
+            rec, is_valid = intersection_tuple_to_record(i, intersections[i], def_val=rec)
             if is_valid:
                 writer.writerow(rec)
 
