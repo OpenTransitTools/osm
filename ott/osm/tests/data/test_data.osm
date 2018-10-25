@@ -2,6 +2,32 @@
 <osm version="0.6" generator="Osmosis 0.45">
   <bounds minlon="-122.70000" minlat="45.45000" maxlon="-122.62000" maxlat="45.54000" origin="0.45"/>
 
+  <way id="5519763" version="32" timestamp="2016-05-27T18:46:57Z" uid="81676" user="Peter Dobratz" changeset="39610835">
+    <nd ref="40496549"/>
+    <nd ref="1504554286"/>
+    <tag k="name" v="Northeast Cesar Chavez Boulevard"/>
+    <tag k="old_name" v="Northeast 39th Avenue"/>
+    <tag k="alt_name" v="Northeast 11139111th Avenue"/>
+    <tag k="lanes" v="2"/>
+    <tag k="oneway" v="yes"/>
+    <tag k="bicycle" v="yes"/>
+    <tag k="highway" v="secondary"/>
+    <tag k="maxspeed" v="30 mph"/>
+    <tag k="sidewalk" v="right"/>
+    <tag k="turn:lanes" v="through;right|right"/>
+    <tag k="RLIS:bicycle" v="caution_area"/>
+    <tag k="change:lanes" v="no|no"/>
+    <tag k="change:lanes:bus" v="yes|yes"/>
+  </way>
+
+
+  <way id="5519763" version="32" timestamp="2016-05-27T18:46:57Z" uid="81676" user="Peter Dobratz" changeset="39610835">
+    <tag k="name" v="Northeast Cesar Chavez Boulevard"/>
+    <tag k="old_name" v="Northeast 39th Avenue"/>
+    <tag k="alt_name" v="Northeast 11139111th Avenue"/>
+  </way>
+
+
   <node id="523474399" version="4" timestamp="2017-01-31T17:40:19Z" uid="81676" user="Peter Dobratz" changeset="45691940" lat="45.4904112" lon="-122.6230366">
     <tag k="name" v="Starbucks"/>
     <tag k="phone" v="+1-503-771-1552"/>
@@ -40,28 +66,6 @@
     <tag k="surface" v="concrete"/>
     <tag k="description" v="OMSI/SE Water MAX Station"/>
     <tag k="public_transport" v="platform"/>
-  </way>
-
-  <way id="5519763" version="32" timestamp="2016-05-27T18:46:57Z" uid="81676" user="Peter Dobratz" changeset="39610835">
-    <nd ref="40496549"/>
-    <nd ref="1410228108"/>
-    <nd ref="1391266407"/>
-    <nd ref="40496554"/>
-    <nd ref="1391266409"/>
-    <nd ref="1222278580"/>
-    <nd ref="1504554286"/>
-    <tag k="name" v="Northeast XXX Boulevard"/>
-    <tag k="lanes" v="2"/>
-    <tag k="oneway" v="yes"/>
-    <tag k="bicycle" v="yes"/>
-    <tag k="highway" v="secondary"/>
-    <tag k="maxspeed" v="30 mph"/>
-    <tag k="old_name" v="Northeast 39th Avenue"/>
-    <tag k="sidewalk" v="right"/>
-    <tag k="turn:lanes" v="through;right|right"/>
-    <tag k="RLIS:bicycle" v="caution_area"/>
-    <tag k="change:lanes" v="no|no"/>
-    <tag k="change:lanes:bus" v="yes|yes"/>
   </way>
 
   <way id="4951565" version="7" timestamp="2016-09-30T06:27:57Z" uid="402624" user="bdiscoe" changeset="42534358">
