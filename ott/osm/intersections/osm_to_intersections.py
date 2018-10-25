@@ -36,11 +36,11 @@ def extract_intersections(osm):
                 num_proc += 1
                 tot_proc += 1
                 for c in w:
-                    if c.tag == 'tag' and 'k' in c.attrib and c.attrib['k'] == 'name':
+                    if c.tag == 'tag' and 'k' in c.attrib and (c.attrib['k'] == 'name' or c.attrib['k'] == 'alt_name'):
                         if 'v' in c.attrib and len(c.attrib['v']) > 0:
                             ret_val[c.attrib['v']] = c.attrib['v']
         except Exception as e:
-            pass
+            print(e)
         return ret_val
 
     # step 1: parse either XML string or file
