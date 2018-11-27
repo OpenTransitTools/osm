@@ -170,7 +170,7 @@ class OsmInfo(object):
         """
         try:
             s = OsmInfo.get_stats(osm_path)
-            print json_utils.dict_to_json_str(s, pretty_print=True)
+            print(json_utils.dict_to_json_str(s, pretty_print=True))
         except Exception as e:
             log.error(e)
             if osm_path.endswith(('.osm', '.xml', '.osm.bz2', '.xml.bz2')) is False:
@@ -191,7 +191,7 @@ class OsmInfo(object):
         from ott.utils.parse.cmdline import osm_cmdline
         p = osm_cmdline.osm_parser_args(prog_name='bin/osm_info', osm_required=True)
         OsmInfo.print_stats(p.osm)
-        print OsmInfo.get_cache_msgs(p.osm, detailed=True)
+        print(OsmInfo.get_cache_msgs(p.osm, detailed=True))
 
 
 def main():

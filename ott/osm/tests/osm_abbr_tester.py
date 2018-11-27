@@ -291,20 +291,20 @@ def main():
         name = name or ''
         if len(name) > 1:
             try:
-                print name
+                print(name)
                 d = sp.dict(name)
             except Exception as pe:
-                print "EXCEPTION: {}".format(pe)
+                print("EXCEPTION: {}".format(pe))
                 continue
 
-            print d
-            print
+            print(d)
+            print()
     '''
-            print 'original: ' + name
-            print 'name:     ' + addr.name
-            print 'type:     ' + sp.find_replace_street_type(addr.type)
-            print 'prefix:   ' + sp.find_replace_dir(addr.prefix)
-            print 'suffix:   ' + sp.find_replace_dir(addr.suffix)
+            print('original: ' + name)
+            print('name:     ' + addr.name)
+            print('type:     ' + sp.find_replace_street_type(addr.type))
+            print('prefix:   ' + sp.find_replace_dir(addr.prefix))
+            print('suffix:   ' + sp.find_replace_dir(addr.suffix))
     '''
 
 

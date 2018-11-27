@@ -40,7 +40,7 @@ def main():
     from ott.utils.parse.cmdline import osm_cmdline
     p = osm_cmdline.osm_parser_args(prog_name='bin/osm_find', osm_required=True)
     n = FindNodes.find(p.osm, p.tag_name)
-    print n
+    print(n)
 
 
 if __name__ == '__main__':
