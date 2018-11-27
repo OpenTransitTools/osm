@@ -166,7 +166,7 @@ class OsmInfo(object):
 
     @classmethod
     def print_stats(cls, osm_path):
-        """ print stats from input file
+        """ stats from input file
         """
         try:
             s = OsmInfo.get_stats(osm_path)
@@ -179,7 +179,7 @@ class OsmInfo(object):
     @classmethod
     def print_stats_via_config(cls):
         """
-        print stats from the .osm file that is config'd in the cache
+        stats from the .osm file that is config'd in the cache
         """
         from ott.osm.osm_cache import OsmCache
         c = OsmCache()

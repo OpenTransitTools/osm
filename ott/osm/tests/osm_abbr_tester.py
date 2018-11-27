@@ -299,13 +299,13 @@ def main():
 
             print(d)
             print()
-    '''
+    """
             print('original: ' + name)
             print('name:     ' + addr.name)
             print('type:     ' + sp.find_replace_street_type(addr.type))
             print('prefix:   ' + sp.find_replace_dir(addr.prefix))
             print('suffix:   ' + sp.find_replace_dir(addr.suffix))
-    '''
+    """
 
 
 if __name__ == '__main__':
