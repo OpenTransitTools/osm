@@ -21,8 +21,8 @@ class PbfTools(object):
             cache_dir = os.path.join(this_dir, 'cache')
         if osmosis_exe is None:
             osmosis_exe = os.path.join(this_dir, 'osmosis/bin/osmosis')
-        tag_file = os.path.join(this_dir, 'osmosis/')
 
+        self.filter_transit_tagtransform_file = os.path.join(this_dir, 'osmosis/tagtransform.xml')
         self.cache_dir = cache_dir
         self.osmosis_exe = osmosis_exe
 
@@ -97,9 +97,27 @@ class PbfTools(object):
         osmosis_cmd = osmosis.format(osmosis_exe, osm_path, pbf_path)
         exe_utils.run_cmd(osmosis_cmd, shell=True)
 
+    def cull_transit_from_osm(self, osm_in_path, osm_out_path=None):
+        """
+        use osmosis and the tag file to remove transit information
+        """
+        if osm_out_path is None:
+            osm_out_path = re.sub('.osm$', '_cull_transit.osm', osm_in_path)
+        osmosis_exe = self.check_osmosis_exe()
+        osmosis = '{} --read-xml {} --tag-transform {} --tf reject-node todo=delete_me --tf reject-way todo=delete_me --tf reject-relation todo=delete_me --write-xml {}'
+        osmosis_cmd = osmosis.format(osmosis_exe, osm_in_path, self.filter_transit_tagtransform_file, osm_out_path)
+        exe_utils.run_cmd(osmosis_cmd, shell=True)
+
     @classmethod
     def osm_to_pbf_cmdline(cls):
         from ott.utils.parse.cmdline import osm_cmdline
         p = osm_cmdline.osm_parser_args(prog_name='bin/osm_to_pbf', osm_required=True)
         pbf = PbfTools()
         pbf.osm_to_pbf(p.osm, p.pbf)
+
+    @classmethod
+    def cull_transit_cmdline(cls):
+        from ott.utils.parse.cmdline import osm_cmdline
+        p = osm_cmdline.osm_parser_args(prog_name='bin/osm_cull_transit', osm_required=True)
+        pbf = PbfTools()
+        pbf.cull_transit_from_osm(p.osm)
