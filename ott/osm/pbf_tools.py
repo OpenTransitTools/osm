@@ -16,12 +16,12 @@ class PbfTools(object):
     osmosis_exe = None
 
     def __init__(self, cache_dir=None, osmosis_exe=None):
+        this_dir = file_utils.get_module_dir(self.__class__)
         if cache_dir is None:
-            this_dir = file_utils.get_module_dir(self.__class__)
             cache_dir = os.path.join(this_dir, 'cache')
         if osmosis_exe is None:
-            this_dir = file_utils.get_module_dir(self.__class__)
             osmosis_exe = os.path.join(this_dir, 'osmosis/bin/osmosis')
+        tag_file = os.path.join(this_dir, 'osmosis/')
 
         self.cache_dir = cache_dir
         self.osmosis_exe = osmosis_exe
