@@ -42,7 +42,6 @@ class OsmInfo(object):
         log.info("calculating stats for {}".format(osm_path))
         self.osm_file = osm_path
 
-        # import pdb; pdb.set_trace()
         for entity in parse_file(osm_path):
             if isinstance(entity, Way):
                 self.way_count += 1
@@ -50,6 +49,7 @@ class OsmInfo(object):
                     self.highway_count += 1
                 if entity.timestamp > self.last.timestamp:
                     self.last.timestamp = entity.timestamp
+                    self.last.id = entity.id
                     if entity.changeset > 0:
                         self.last.changeset = entity.changeset
 
@@ -132,7 +132,9 @@ class OsmInfo(object):
         stats = OsmInfo.get_stats(file_path)
 
         # step 2: make up base message with file name and file / last edit dates
-        msg = "{}{} : file date = {} -- last OSM update = {}".format(prefix, file_name, stats['last'].get('file_date'), stats['last'].get('edit_date'))
+        msg = "{}{} : file date = {} -- last OSM update = {} : http://osm.org/way/{}".format(
+            prefix, file_name, stats['last'].get('file_date'), stats['last'].get('edit_date'), stats['last'].get('id')
+        )
 
         # step 3: add details like changesets, etc...
         if detailed:
