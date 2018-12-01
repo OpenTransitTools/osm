@@ -91,6 +91,8 @@ class OsmCache(CacheBase):
             OsmRename.rename(self.osm_path, do_bkup=False)
             OsmInfo.cache_stats(self.osm_path)
             self.pbf_tools.osm_to_pbf(self.osm_path)
+            cull_osm = self.pbf_tools.cull_transit_from_osm(self.osm_path)
+            self.pbf_tools.osm_to_pbf(cull_osm)
             self.other_exports()
             self.intersections_export()
         return is_updated

@@ -77,11 +77,11 @@ class PbfTools(object):
         log.info(osmosis_cmd)
         exe_utils.run_cmd(osmosis_cmd, shell=True)
 
-    def pbf_to_osm(self, osm_path, pbf_path=None):
+    def pbf_to_osm(self, pbf_path, osm_path=None):
         """ use osmosis to convert .pbf to .osm file
         """
-        if pbf_path is None:
-            pbf_path = re.sub('.osm$', '', osm_path) + ".pbf"
+        if osm_path is None:
+            osm_path = re.sub('.pbf$', '.osm', osm_path)
         osmosis_exe = self.check_osmosis_exe()
         osmosis = '{} --read-pbf {} --write-xml {}'
         osmosis_cmd = osmosis.format(osmosis_exe, pbf_path, osm_path)
@@ -91,7 +91,7 @@ class PbfTools(object):
         """ use osmosis to convert .osm file to .pbf
         """
         if pbf_path is None:
-            pbf_path = re.sub('.osm$', '', osm_path) + ".pbf"
+            pbf_path = osm_path + ".pbf"
         osmosis_exe = self.check_osmosis_exe()
         osmosis = '{} --read-xml {} --write-pbf {}'
         osmosis_cmd = osmosis.format(osmosis_exe, osm_path, pbf_path)
@@ -107,6 +107,7 @@ class PbfTools(object):
         osmosis = '{} --read-xml {} --tag-transform {} --tf reject-node todo=delete_me --tf reject-way todo=delete_me --tf reject-relation todo=delete_me --write-xml {}'
         osmosis_cmd = osmosis.format(osmosis_exe, osm_in_path, self.filter_transit_tagtransform_file, osm_out_path)
         exe_utils.run_cmd(osmosis_cmd, shell=True)
+        return osm_out_path
 
     @classmethod
     def osm_to_pbf_cmdline(cls):
