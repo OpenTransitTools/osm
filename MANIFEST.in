@@ -1,1 +1,2 @@
 include ott/osm/rename/config/*.csv
+include ott/osm/osmosis/tagtransform.xml
