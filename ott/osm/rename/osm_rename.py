@@ -8,6 +8,8 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 from ott.utils import file_utils
+from ott.utils import date_utils
+
 from .osm_abbr_parser import OsmAbbrParser
 
 import logging
@@ -17,7 +19,7 @@ log = logging.getLogger(__file__)
 class OsmRename(object):
     """ Utility for getting stats on an osm file 
     """
-    attrib = "streets renamed by OpenTransitTools"
+    attrib = "streets renamed by OpenTransitTools on {}".format(date_utils.pretty_date())
     bunchsize = 1000000
     rename_cache = {}
 
