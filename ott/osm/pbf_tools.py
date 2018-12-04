@@ -39,7 +39,7 @@ class PbfTools(object):
 
         # step 2: osmosis installed?
         if not os.path.exists(osmosis_exe):
-            e = "OSMOSIS {} doesn't exist...".format(osmosis_exe)
+            e = "OSMOSIS {} doesn't exist...maybe set it via a cmdline params (osmos_exe)".format(osmosis_exe)
             raise Exception(e)
         return osmosis_exe
 
@@ -111,14 +111,15 @@ class PbfTools(object):
 
     @classmethod
     def osm_to_pbf_cmdline(cls):
+        #import pdb; pdb.set_trace()
         from ott.utils.parse.cmdline import osm_cmdline
         p = osm_cmdline.osm_parser_args(prog_name='bin/osm_to_pbf', osm_required=True)
-        pbf = PbfTools()
+        pbf = PbfTools(osmosis_exe=p.osmosis_exe)
         pbf.osm_to_pbf(p.osm, p.pbf)
 
     @classmethod
     def cull_transit_cmdline(cls):
         from ott.utils.parse.cmdline import osm_cmdline
         p = osm_cmdline.osm_parser_args(prog_name='bin/osm_cull_transit', osm_required=True)
-        pbf = PbfTools()
+        pbf = PbfTools(osmosis_exe=p.osmosis_exe)
         pbf.cull_transit_from_osm(p.osm)
