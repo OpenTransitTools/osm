@@ -64,6 +64,8 @@ class OsmCache(CacheBase):
         fresh = self.is_fresh_in_cache(pbf_path)
         sized = file_utils.is_min_sized(pbf_path, min_size)
         if force_update or not fresh or not sized:
+            if not sized: log.info("PBF file {} too small ... UPDATING.".format(pbf_path))
+            elif not fresh: log.info("PBF file {} too old ... UPDATING.".format(pbf_path))
             meta_url = self.config.get('meta_url')
             self.pbf_tools.download_pbf(pbf_url, meta_url)
             is_updated = True
