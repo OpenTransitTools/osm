@@ -28,14 +28,19 @@ class Osm2pgsql(OsmCache):
             self.db_url = self.config.get('osm_url', section='db')
             log.info("'{}' into '{}'".format(self.osm2pgsql_exe, self.db_url))
         else:
-            log.info("NOTE: this won't work, since can't find osm2pgsql binary '{}'".format(binary_name))
+            log.warn("NOTE: this won't work, since can't find osm2pgsql binary '{}'".format(binary_name))
 
     def run(self):
-        if self.osm_path and self.db_url:
-            db = db_utils.make_url(self.db_url)
-            cmd = "{} -c -d {} -H {} -P {} -U {} {}".format(self.osm2pgsql_exe, db.database, db.host, db.port, db.username, self.osm_path)
-            log.info(cmd)
-            exe_utils.run_cmd(cmd, shell=True)
+        min_size = self.config.get_int('min_size', def_val=100000)
+        sized = file_utils.is_min_sized(self.osm_path, min_size)
+        if sized:
+            if self.db_url:
+                db = db_utils.make_url(self.db_url)
+                cmd = "{} -c -d {} -H {} -P {} -U {} {}".format(self.osm2pgsql_exe, db.database, db.host, db.port, db.username, self.osm_path)
+                log.info(cmd)
+                exe_utils.run_cmd(cmd, shell=True)
+        else:
+            log.warn("osm2pgsql NOT RUNNING since {} looks smaller than {} smoots.".format(self.osm_path, min_size))
 
 
 def main():
