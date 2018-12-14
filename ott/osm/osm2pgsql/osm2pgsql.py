@@ -3,7 +3,6 @@ from ott.utils import file_utils
 from ott.utils import db_utils
 from ..osm_cache import OsmCache
 
-
 import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
@@ -25,7 +24,7 @@ class Osm2pgsql(OsmCache):
 
         self.osm2pgsql_exe = exe_utils.find_executable(binary_name)
         if self.osm2pgsql_exe and self.osm_path:
-            self.db_url = self.config.get('osm_url', section='db')
+            self.db_url = self.config.get('url', section='osm_db')
             log.info("'{}' into '{}'".format(self.osm2pgsql_exe, self.db_url))
         else:
             log.warn("NOTE: this won't work, since can't find osm2pgsql binary '{}'".format(binary_name))
