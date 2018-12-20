@@ -15,6 +15,8 @@ class Osm2pgsql(OsmCache):
     osm2pgsql_exe = None
     db_url = None
     osm_path = None
+    style_path = None
+    epsg = "3857"
 
     def __init__(self, binary_name='osm2pgsql'):
         """
@@ -32,14 +34,18 @@ class Osm2pgsql(OsmCache):
     def run(self):
         min_size = self.config.get_int('min_size', def_val=100000)
         sized = file_utils.is_min_sized(self.osm_path, min_size)
-        if sized:
-            if self.db_url:
-                db = db_utils.make_url(self.db_url)
-                cmd = "{} -c -d {} -H {} -P {} -U {} {}".format(self.osm2pgsql_exe, db.database, db.host, db.port, db.username, self.osm_path)
-                log.info(cmd)
-                exe_utils.run_cmd(cmd, shell=True)
+        if sized and self.db_url:
+            db = db_utils.make_url(self.db_url)
+            cmd = "{} --create --style {} --proj {} -d {} -H {} -P {} -U {} {}".format(
+                self.osm2pgsql_exe, self.style_path, self.epsg, db.database, db.host, db.port, db.username, self.osm_path
+            )
+            log.info(cmd)
+            exe_utils.run_cmd(cmd, shell=True)
         else:
-            log.warn("osm2pgsql NOT RUNNING since {} looks smaller than {} smoots.".format(self.osm_path, min_size))
+            if sized is None:
+                log.warn("osm2pgsql NOT RUNNING since {} looks smaller than {} smoots.".format(self.osm_path, min_size))
+            else:
+                log.warn("osm2pgsql NOT RUNNING (maybe issues with the db url {})?".format(self.db_url))
 
 
 def main():
