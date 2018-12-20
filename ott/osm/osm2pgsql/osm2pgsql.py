@@ -3,6 +3,7 @@ from ott.utils import file_utils
 from ott.utils import db_utils
 from ..osm_cache import OsmCache
 
+import os
 import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
