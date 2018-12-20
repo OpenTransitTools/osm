@@ -24,6 +24,11 @@ class Osm2pgsql(OsmCache):
         """
         super(Osm2pgsql, self).__init__()
 
+        # step 1: config the path to an osm2pgsql style file
+        style_file = self.config.get('osm2pgsql_style', default="default.style")
+        self.style_path = os.path.join(self.this_module_dir, 'styles', style_file)
+
+        # step 2: find the osm2pgsql binary ... if not found in your path, the db_url won't be set and nothing will run
         self.osm2pgsql_exe = exe_utils.find_executable(binary_name)
         if self.osm2pgsql_exe and self.osm_path:
             self.db_url = self.config.get('url', section='osm_db')
@@ -45,7 +50,7 @@ class Osm2pgsql(OsmCache):
             if sized is None:
                 log.warn("osm2pgsql NOT RUNNING since {} looks smaller than {} smoots.".format(self.osm_path, min_size))
             else:
-                log.warn("osm2pgsql NOT RUNNING (maybe issues with the db url {})?".format(self.db_url))
+                log.warn("osm2pgsql NOT RUNNING (Is osm2pgsql in your PATH? Issues with the db url {}?)".format(self.db_url))
 
 
 def main():
