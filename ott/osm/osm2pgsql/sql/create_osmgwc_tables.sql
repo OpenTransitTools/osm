@@ -6,11 +6,11 @@
 
 
 -- new clean schema
-DROP   SCHEMA if EXISTS osm_old;
-ALTER  SCHEMA NAME osm TO osm_old if EXISTS osm;
+DROP   SCHEMA osm_old CASCADE;
+ALTER  SCHEMA osm RENAME TO osm_old;
 CREATE SCHEMA osm;
 
-\set ESPG 3857
+\set EPSG '''3857'''
 
 
 create table osm.country(
