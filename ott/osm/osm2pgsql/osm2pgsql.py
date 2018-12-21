@@ -31,13 +31,13 @@ class Osm2pgsql(OsmCache):
 
         # step 1: config the path to an osm2pgsql style file and psql table file
         style_file = self.config.get("osm2pgsql_style", def_val="default.style")
-        if file_utils.exits(style_file):
+        if file_utils.exists(style_file):
             self.style_path = style_file
         else:
             self.style_path = os.path.join(self.this_module_dir, "styles", style_file)
 
         sql_file = self.config.get("osm2pgsql_sql", def_val="create_osmgwc_tables.sql")
-        if file_utils.exits(sql_file):
+        if file_utils.exists(sql_file):
             self.sql_path = sql_file
         else:
             self.sql_path = os.path.join(self.this_module_dir, "sql", sql_file)
@@ -51,7 +51,7 @@ class Osm2pgsql(OsmCache):
             log.warn("NOTE: this won't work, since can't find osm2pgsql binary '{}'".format(osm2pgsql_name))
 
         # step 3: find psql
-        if file_utils.exits(self.sql_path):
+        if file_utils.exists(self.sql_path):
             self.psql_exe = exe_utils.find_executable(psql_name)
             if self.psql_exe is None:
                 log.warn("NOTE: can't find '{}' binary, so won't be able to run '{}' post process".format(psql_name, sql_file))
