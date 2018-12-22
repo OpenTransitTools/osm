@@ -1,3 +1,4 @@
 include ott/osm/rename/config/*.csv
 include ott/osm/osmosis/tagtransform.xml
 include ott/osm/osm2pgsql/styles/*
+include ott/osm/osm2pgsql/sql/*
