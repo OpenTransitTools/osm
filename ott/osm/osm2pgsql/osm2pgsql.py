@@ -73,7 +73,7 @@ class Osm2pgsql(OsmCache):
 
             # step 2: if we have a sql post-processing file, run it thru psql
             if self.psql_exe and self.sql_path:
-                cmd = "{} -d {} -h {} -p {} -U {} -w {} -f {}".format(
+                cmd = "{} -d {} -h {} -p {} -U {} -w -f {}".format(
                     self.psql_exe, db.database, db.host, db.port, db.username, self.sql_path
                 )
                 log.info(cmd)
