@@ -211,7 +211,9 @@ class OsmCache(CacheBase):
 
 
 def clip_from_pbf():
-    """ for command line clipping """
+    """ for command line clipping of planet (or regional) .osm.pbf into custom .osm + rename and stats """
     # todo: cmd line parser
     o = OsmCache()
     o.clip_to_bbox()
+    OsmRename.rename(o.osm_path, do_bkup=False)
+    OsmInfo.cache_stats(o.osm_path)
