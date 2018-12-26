@@ -78,7 +78,7 @@ class OsmCache(CacheBase):
             sized = file_utils.is_min_sized(self.osm_path, min_size)
             pbf_newer = file_utils.is_a_newer_than_b(pbf_path, self.osm_path, offset_minutes=10)
             if is_updated or pbf_newer or not fresh or not sized:
-                self.pbf_tools.clip_to_bbox(pbf_path, self.osm_path, self.top, self.bottom, self.left, self.right)
+                self.clip_to_bbox(pbf_path, self.osm_path, self.top, self.bottom, self.left, self.right)
                 is_updated = True
             else:
                 is_updated = False
@@ -99,6 +99,18 @@ class OsmCache(CacheBase):
             self.intersections_export()
         return is_updated
 
+    def clip_to_bbox(self, pbf_path="us-west-latest.osm.pbf", osm_path=None, top=None, bottom=None, left=None, right=None):
+        """ clip to bbox ... good for cmdline """
+        if not file_utils.exists(pbf_path):
+            pbf_path = os.path.join(self.cache_dir, pbf_path)
+
+        osm_path = osm_path if osm_path else self.osm_path
+        top = top if top else self.top
+        bottom = bottom if bottom else self.bottom
+        left = left if left else self.left
+        right = right if right else self.right
+        self.pbf_tools.clip_to_bbox(pbf_path, osm_path, top, bottom, left, right)
+
     def other_exports(self, name=None):
         """
         export other .osm files
@@ -110,7 +122,7 @@ class OsmCache(CacheBase):
             in_path = os.path.join(self.cache_dir, e['in'])
             out_path = os.path.join(self.cache_dir, e['out'])
             top, bottom, left, right = self.config.get_bbox(e['bbox'])
-            self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
+            self.clip_to_bbox(in_path, out_path, top, bottom, left, right)
 
     def intersections_export(self):
         """
@@ -196,3 +208,10 @@ class OsmCache(CacheBase):
         name = sys.argv[1] if len(sys.argv) > 1 else None
         c = OsmCache()
         c.other_exports(name)
+
+
+def clip_from_pbf():
+    """ for command line clipping """
+    # todo: cmd line parser
+    o = OsmCache()
+    o.clip_to_bbox()

@@ -72,7 +72,7 @@ class PbfTools(object):
             outputs: both an .osm file and a .pbf file of the clipped area
         """
         osmosis_exe = self.check_osmosis_exe()
-        osmosis = "{} --rb {} --bounding-box top={} bottom={} left={} right={} completeWays=true --wx {}"
+        osmosis = "{} --rb {} --bounding-box top={} bottom={} left={} right={} completeWays=true completeRelations=true --wx {}"
         osmosis_cmd = osmosis.format(osmosis_exe, input_path, top, bottom, left, right, output_path)
         log.info(osmosis_cmd)
         exe_utils.run_cmd(osmosis_cmd, shell=True)
