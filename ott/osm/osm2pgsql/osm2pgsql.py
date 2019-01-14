@@ -60,6 +60,7 @@ class Osm2pgsql(OsmCache):
 
     def run(self):
         """ run osm2pgsql and (optionally) the psql post-processing script """
+        # import pdb; pdb.set_trace()
         min_size = self.config.get_int("min_size", def_val=100000)
         sized = file_utils.is_min_sized(self.osm_path, min_size)
         if sized and self.db_url:
