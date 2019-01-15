@@ -21,6 +21,9 @@ class OsmCache(CacheBase):
     osm_name = None
     osm_path = None
 
+    osm_carto_name = None
+    osm_carto_path = None
+
     pbf_tools = None
 
     top = None
@@ -42,6 +45,9 @@ class OsmCache(CacheBase):
         self.osm_name = string_utils.safe_append(name, ".osm")
         self.osm_path = string_utils.safe_path_join(self.cache_dir, self.osm_name)
 
+        self.osm_carto_name = string_utils.safe_append(name, "-carto.osm")
+        self.osm_carto_path = string_utils.safe_path_join(self.cache_dir, self.osm_carto_name)
+
         # step 3: pbf tools (for downloading new data from geofabrik, as well as converting the .pbf to our .osm)
         osmosis_path = self.config.get('osmosis_path', def_val=os.path.join(self.this_module_dir, 'osmosis', 'bin', 'osmosis'))
         self.pbf_tools = PbfTools(self.cache_dir, osmosis_path)
@@ -52,6 +58,7 @@ class OsmCache(CacheBase):
         convert .pbf to .osm if .pbf file is newer than .osm file
         :return indication if updated
         """
+        # import pdb; pdb.set_trace()
         assert self.is_configured() is True
 
         is_updated = force_update
@@ -78,7 +85,7 @@ class OsmCache(CacheBase):
             sized = file_utils.is_min_sized(self.osm_path, min_size)
             pbf_newer = file_utils.is_a_newer_than_b(pbf_path, self.osm_path, offset_minutes=10)
             if is_updated or pbf_newer or not fresh or not sized:
-                self.clip_to_bbox(pbf_path, self.osm_path, self.top, self.bottom, self.left, self.right)
+                self.clip_region_to_bbox(pbf_path)
                 is_updated = True
             else:
                 is_updated = False
@@ -99,17 +106,29 @@ class OsmCache(CacheBase):
             self.intersections_export()
         return is_updated
 
-    def clip_to_bbox(self, in_path="us-west-latest.osm.pbf", out_path=None, top=None, bottom=None, left=None, right=None):
+    def clip_region_to_bbox(self, pbf_path="us-west-latest.osm.pbf"):
+        """
+        we clip 2 files out of the source .pbf file
+        first, we clip a -carto.osm directly from the .pbf source, and then from that a non-carto osm file.
+
+        the -carto.osm file calls osmosis with --completeRelations=true and --completeWays=true ... without those
+        flags, the resulting .osm file will probably lack complete rivers, parks, boundaries and other polygonal data.
+        Having those flags can lead to much larger extents (e.g., NW Oregon/SW Wash file will extend to Montana)
+
+        The non-carto file is clipped strictly to the bbox. It's better use is the trip planner, geocoder, etc...
+        """
+        self.clip_to_bbox(pbf_path, self.osm_carto_path, self.top, self.bottom, self.left, self.right, complete=True)
+        self.clip_to_bbox(self.osm_carto_path, self.osm_path, self.top, self.bottom, self.left, self.right)
+
+    def clip_to_bbox(self, in_path, out_path, top, bottom, left, right, complete=False):
         """ clip to bbox ... good for cmdline """
         if not file_utils.exists(in_path):
             in_path = os.path.join(self.cache_dir, in_path)
 
-        out_path = out_path if out_path else self.osm_path
-        top = top if top else self.top
-        bottom = bottom if bottom else self.bottom
-        left = left if left else self.left
-        right = right if right else self.right
-        self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
+        if complete:
+            self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
+        else:
+            self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right, crel="", cway="")
 
     def other_exports(self, name=None):
         """
@@ -176,7 +195,6 @@ class OsmCache(CacheBase):
     def update(cls, force_update, force_postprocessing=False):
         """ check OSM for freshness
         """
-        # import pdb; pdb.set_trace()
         osm = OsmCache()
         ret_val = osm.check_cached_osm(force_update, force_postprocessing)
         return ret_val
@@ -213,7 +231,7 @@ class OsmCache(CacheBase):
 def clip_from_pbf():
     """ for command line clipping of planet (or regional) .osm.pbf into .osm file """
     o = OsmCache()
-    o.clip_to_bbox()
+    o.clip_region_to_bbox()
     return o
 
 

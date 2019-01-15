@@ -72,11 +72,12 @@ class PbfTools(object):
         (file paths derrived by the cache paths & config)
         outputs: both an .osm file and a .pbf file of the clipped area
         """
-        in_type = ""
+        in_type = "xml" if input_path.endswith(".osm") else "pbf-fast"
+        out_type = "xml" if output_path.endswith(".osm") else "pbf"
 
         osmosis_exe = self.check_osmosis_exe()
-        osmosis = "{} --rb {} --bounding-box top={} bottom={} left={} right={} clipIncompleteEntities=yes --wx {}"
-        osmosis_cmd = osmosis.format(osmosis_exe, input_path, top, bottom, left, right, output_path)
+        osmosis = "{} --read-{} {} --bounding-box top={} bottom={} left={} right={} {} {} clipIncompleteEntities=yes --write-{} {}"
+        osmosis_cmd = osmosis.format(osmosis_exe, in_type, input_path, top, bottom, left, right, crel, cway, out_type, output_path)
         log.info(osmosis_cmd)
         exe_utils.run_cmd(osmosis_cmd, shell=True)
 
