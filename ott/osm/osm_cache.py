@@ -99,17 +99,17 @@ class OsmCache(CacheBase):
             self.intersections_export()
         return is_updated
 
-    def clip_to_bbox(self, pbf_path="us-west-latest.osm.pbf", osm_path=None, top=None, bottom=None, left=None, right=None):
+    def clip_to_bbox(self, in_path="us-west-latest.osm.pbf", out_path=None, top=None, bottom=None, left=None, right=None):
         """ clip to bbox ... good for cmdline """
-        if not file_utils.exists(pbf_path):
-            pbf_path = os.path.join(self.cache_dir, pbf_path)
+        if not file_utils.exists(in_path):
+            in_path = os.path.join(self.cache_dir, in_path)
 
-        osm_path = osm_path if osm_path else self.osm_path
+        out_path = out_path if out_path else self.osm_path
         top = top if top else self.top
         bottom = bottom if bottom else self.bottom
         left = left if left else self.left
         right = right if right else self.right
-        self.pbf_tools.clip_to_bbox(pbf_path, osm_path, top, bottom, left, right)
+        self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
 
     def other_exports(self, name=None):
         """
@@ -211,9 +211,14 @@ class OsmCache(CacheBase):
 
 
 def clip_from_pbf():
-    """ for command line clipping of planet (or regional) .osm.pbf into custom .osm + rename and stats """
-    # todo: cmd line parser
+    """ for command line clipping of planet (or regional) .osm.pbf into .osm file """
     o = OsmCache()
     o.clip_to_bbox()
+    return o
+
+
+def clip_rename():
+    """ for command line clipping of planet (or regional) .osm.pbf into custom .osm + rename and stats """
+    o = clip_from_pbf()
     OsmRename.rename(o.osm_path, do_bkup=False)
     OsmInfo.cache_stats(o.osm_path)

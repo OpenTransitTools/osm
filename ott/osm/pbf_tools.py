@@ -66,11 +66,14 @@ class PbfTools(object):
         except Exception as e:
             log.info(e)
 
-    def clip_to_bbox(self, input_path, output_path, top, bottom, left, right):
-        """ use osmosis to clip a bbox out of a .pbf, and output .osm file
-            (file paths derrived by the cache paths & config)
-            outputs: both an .osm file and a .pbf file of the clipped area
+    def clip_to_bbox(self, input_path, output_path, top, bottom, left, right, crel="completeRelations=yes", cway="completeWays=yes"):
         """
+        use osmosis to clip a bbox out of a .pbf, and output .osm file
+        (file paths derrived by the cache paths & config)
+        outputs: both an .osm file and a .pbf file of the clipped area
+        """
+        in_type = ""
+
         osmosis_exe = self.check_osmosis_exe()
         osmosis = "{} --rb {} --bounding-box top={} bottom={} left={} right={} clipIncompleteEntities=yes --wx {}"
         osmosis_cmd = osmosis.format(osmosis_exe, input_path, top, bottom, left, right, output_path)

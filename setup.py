@@ -56,6 +56,7 @@ setup(
     entry_points="""
         [console_scripts]
         osm_clip_from_pbf = ott.osm.osm_cache:clip_from_pbf
+        osm_clip_rename = ott.osm.osm_cache:clip_rename
         osm_update = ott.osm.osm_cache:OsmCache.load
         osm_to_pgsql = ott.osm.osm2pgsql.osm2pgsql:main
         osm_to_pbf = ott.osm.pbf_tools:PbfTools.osm_to_pbf_cmdline
