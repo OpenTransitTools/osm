@@ -83,8 +83,8 @@ def extract_intersections(osm):
                             road_ways[nd_ref] = []
                         road_ways[nd_ref].append(child)
 
-            if i % 100000 == 0:
-                sys.stderr.write('.')
+                if i % 100000 == 0:
+                    sys.stderr.write('.')
 
     # Find nodes that are shared with more than one way, which might correspond to intersections
     #intersections = filter(lambda x: counter[x] > 1, counter)
@@ -98,8 +98,8 @@ def extract_intersections(osm):
             n = counter.get(z)
             if n and n > 1:
                 intersection_nodes.append(child)
-        if i % 100000 == 0:
-            sys.stderr.write('.')
+                if i % 5000 == 0:
+                    sys.stderr.write('.')
 
     log.info("Number of RAW nodes: {}".format(len(intersection_nodes)))
     for i, n in enumerate(intersection_nodes):
@@ -108,12 +108,12 @@ def extract_intersections(osm):
         names = names_d.values()
         if len(names) < 2:
             # print(names)
-            pass
-        else:
-            coordinate = n.attrib['lat'] + ',' + n.attrib['lon']
-            two_names_list = itertools.combinations(names, 2)
-            for t in two_names_list:
-                ret_val[t] = coordinate
+            continue
+
+        coordinate = n.attrib['lat'] + ',' + n.attrib['lon']
+        two_names_list = itertools.combinations(names, 2)
+        for t in two_names_list:
+            ret_val[t] = coordinate
         if i % 5000 == 0:
             sys.stderr.write('.')
 
