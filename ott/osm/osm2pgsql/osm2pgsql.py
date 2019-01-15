@@ -19,7 +19,6 @@ class Osm2pgsql(OsmCache):
     db_url = None
     epsg = "3857"
 
-    osm_path = None
     style_path = None
     sql_path = None
 
@@ -44,7 +43,7 @@ class Osm2pgsql(OsmCache):
 
         # step 2: find the osm2pgsql binary ... if not found in your path, the db_url won't be set and nothing will run
         self.osm2pgsql_exe = exe_utils.find_executable(osm2pgsql_name)
-        if self.osm2pgsql_exe and self.osm_path:
+        if self.osm2pgsql_exe:
             self.db_url = self.config.get("url", section="osm_db")
             log.info("'{}' into '{}'".format(self.osm2pgsql_exe, self.db_url))
         else:
@@ -62,17 +61,25 @@ class Osm2pgsql(OsmCache):
         """ run osm2pgsql and (optionally) the psql post-processing script """
         #import pdb; pdb.set_trace()
         min_size = self.config.get_int("min_size", def_val=100000)
-        sized = file_utils.is_min_sized(self.osm_path, min_size)
+
+        # step 1: use the -carto.osm file if it exists and is sized, else default to the .osm data file
+        osm_input_path = self.osm_path
+        if self.osm_carto_path and file_utils.exists(self.osm_carto_path):
+            if file_utils.is_min_sized(osm_input_path, min_size):
+                osm_input_path = self.osm_carto_path
+
+        # step 2: run osm2pgsql if file is sized and we have a database (url) to load things into
+        sized = file_utils.is_min_sized(osm_input_path, min_size)
         if sized and self.db_url:
-            # step 1: run osm2pgsql
+            # step 3: run osm2pgsql
             db = db_utils.make_url(self.db_url)
             cmd = "{} --create --style {} --proj {} -d {} -H {} -P {} -U {} {}".format(
-                self.osm2pgsql_exe, self.style_path, self.epsg, db.database, db.host, db.port, db.username, self.osm_path
+                self.osm2pgsql_exe, self.style_path, self.epsg, db.database, db.host, db.port, db.username, osm_input_path
             )
             log.info(cmd)
             exe_utils.run_cmd(cmd, shell=True)
 
-            # step 2: if we have a sql post-processing file, run it thru psql
+            # step 4: if we have a sql post-processing file, run it thru psql
             if self.psql_exe and self.sql_path:
                 cmd = "{} -d {} -h {} -p {} -U {} -w -f {}".format(
                     self.psql_exe, db.database, db.host, db.port, db.username, self.sql_path
@@ -81,7 +88,7 @@ class Osm2pgsql(OsmCache):
                 exe_utils.run_cmd(cmd, shell=True)
         else:
             if sized is None:
-                log.warn("osm2pgsql NOT RUNNING since {} looks smaller than {} smoots.".format(self.osm_path, min_size))
+                log.warn("osm2pgsql NOT RUNNING since {} looks smaller than {} smoots.".format(osm_input_path, min_size))
             else:
                 log.warn("osm2pgsql NOT RUNNING (Is osm2pgsql in your PATH? Issues with the db url {}?)".format(self.db_url))
 

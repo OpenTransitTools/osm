@@ -104,6 +104,8 @@ class OsmCache(CacheBase):
             self.pbf_tools.osm_to_pbf(cull_osm)
             self.other_exports()
             self.intersections_export()
+            self.osm_2_pgsql()
+
         return is_updated
 
     def clip_region_to_bbox(self, pbf_path="us-west-latest.osm.pbf"):
@@ -209,10 +211,14 @@ class OsmCache(CacheBase):
     @classmethod
     def intersections_cache(cls):
         """
-        generate .csv from cached .osm file
+        generate intersections .csv from cached .osm file
         """
-        c = OsmCache()
-        c.intersections_export()
+        OsmCache().intersections_export()
+
+    @classmethod
+    def osm_2_pgsql(cls):
+        from osm2pgsql.osm2pgsql import Osm2pgsql
+        Osm2pgsql().run()
 
     @classmethod
     def exports(cls):
