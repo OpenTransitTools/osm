@@ -85,7 +85,7 @@ class OsmCache(CacheBase):
             sized = file_utils.is_min_sized(self.osm_path, min_size)
             pbf_newer = file_utils.is_a_newer_than_b(pbf_path, self.osm_path, offset_minutes=10)
             if is_updated or pbf_newer or not fresh or not sized:
-                self.clip_region_to_bbox(pbf_path)
+                self.clip_region_to_bbox(pbf_path, rename=True)
                 is_updated = True
             else:
                 is_updated = False
@@ -97,7 +97,6 @@ class OsmCache(CacheBase):
 
         # step 4: other OSM processing steps on a new (fresh) .osm file
         if is_updated or force_postprocessing:
-            OsmRename.rename(self.osm_path, do_bkup=False)
             OsmInfo.cache_stats(self.osm_path)
             self.pbf_tools.osm_to_pbf(self.osm_path)
             cull_osm = self.pbf_tools.cull_transit_from_osm(self.osm_path)
@@ -108,7 +107,7 @@ class OsmCache(CacheBase):
 
         return is_updated
 
-    def clip_region_to_bbox(self, pbf_path="us-west-latest.osm.pbf"):
+    def clip_region_to_bbox(self, pbf_path="us-west-latest.osm.pbf", rename=False):
         """
         we clip 2 files out of the source .pbf file
         first, we clip a -carto.osm directly from the .pbf source, and then from that a non-carto osm file.
@@ -120,6 +119,8 @@ class OsmCache(CacheBase):
         The non-carto file is clipped strictly to the bbox. It's better use is the trip planner, geocoder, etc...
         """
         self.clip_to_bbox(pbf_path, self.osm_carto_path, self.top, self.bottom, self.left, self.right, complete=True)
+        if rename:
+            OsmRename.rename(self.osm_carto_path, do_bkup=False)
         self.clip_to_bbox(self.osm_carto_path, self.osm_path, self.top, self.bottom, self.left, self.right)
 
     def clip_to_bbox(self, in_path, out_path, top, bottom, left, right, complete=False):
@@ -152,6 +153,7 @@ class OsmCache(CacheBase):
         intersections = self.config.get_json('intersections')
         if intersections:
             csv_path = os.path.join(self.cache_dir, intersections)
+            log.info("exporting intersections to file {}".format(csv_path))
             osm_to_intersections(self.osm_path, csv_path)
 
     def is_configured(self):

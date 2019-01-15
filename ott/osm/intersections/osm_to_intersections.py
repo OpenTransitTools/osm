@@ -14,6 +14,9 @@ try:
 except ImportError as e:
     from xml.etree import ElementTree as ET
 
+import logging
+log = logging.getLogger(__file__)
+
 
 tot_proc = 0
 num_proc = 0
@@ -32,6 +35,7 @@ def extract_intersections(osm):
         global tot_proc
         ret_val = {}
         try:
+            sys.stderr.write('.')
             for w in way_list:
                 num_proc += 1
                 tot_proc += 1
@@ -39,8 +43,9 @@ def extract_intersections(osm):
                     if c.tag == 'tag' and 'k' in c.attrib and (c.attrib['k'] == 'name' or c.attrib['k'] == 'alt_name'):
                         if 'v' in c.attrib and len(c.attrib['v']) > 0:
                             ret_val[c.attrib['v']] = c.attrib['v']
+            sys.stderr.write('.')
         except Exception as e:
-            print(e)
+            log.warning(e)
         return ret_val
 
     # step 1: parse either XML string or file
@@ -52,11 +57,11 @@ def extract_intersections(osm):
         root = tree.getroot()
         children = root.getchildren()
 
-    sys.stderr.write('OSM NODES READ: {}\n'.format(len(children)))
+    log.info("number of osm nodes read in: {}".format(len(children)))
 
     counter = {}
     road_ways = {}
-    for child in children:
+    for i, child in enumerate(children):
         if child.tag == 'way':
             is_road = False
 
@@ -78,6 +83,9 @@ def extract_intersections(osm):
                             road_ways[nd_ref] = []
                         road_ways[nd_ref].append(child)
 
+            if i % 100000 == 0:
+                sys.stderr.write('.')
+
     # Find nodes that are shared with more than one way, which might correspond to intersections
     #intersections = filter(lambda x: counter[x] > 1, counter)
     #sys.stderr.write('INtERSECTIONS READ: {}\n'.format(len(intersections)))
@@ -91,10 +99,9 @@ def extract_intersections(osm):
             if n and n > 1:
                 intersection_nodes.append(child)
         if i % 100000 == 0:
-            sys.stderr.write('#')
+            sys.stderr.write('.')
 
-    sys.stderr.write('\n\nINERSECTION NODES: {}\n'.format(len(intersection_nodes)))
-
+    log.info("Number of RAW nodes: {}".format(len(intersection_nodes)))
     for i, n in enumerate(intersection_nodes):
         z = n.attrib['id']
         names_d = get_names_from_way_list(road_ways[z])
@@ -108,11 +115,9 @@ def extract_intersections(osm):
             for t in two_names_list:
                 ret_val[t] = coordinate
         if i % 5000 == 0:
-            sys.stderr.write('#')
+            sys.stderr.write('.')
 
-    """
-    print("num raw intersections: {}, num named intersections: {}".format(raw_intersection_count, len(ret_val)))
-    """
+    log.info("Number of NAMED (output) intersection nodes: {}".format(len(ret_val)))
     return ret_val
 
 

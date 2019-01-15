@@ -63,10 +63,10 @@ class Osm2pgsql(OsmCache):
         min_size = self.config.get_int("min_size", def_val=100000)
 
         # step 1: use the -carto.osm file if it exists and is sized, else default to the .osm data file
-        osm_input_path = self.osm_path
-        if self.osm_carto_path and file_utils.exists(self.osm_carto_path):
-            if file_utils.is_min_sized(osm_input_path, min_size):
-                osm_input_path = self.osm_carto_path
+        if file_utils.is_min_sized(self.osm_carto_path, min_size):
+            osm_input_path = self.osm_carto_path
+        else:
+            osm_input_path = self.osm_path
 
         # step 2: run osm2pgsql if file is sized and we have a database (url) to load things into
         sized = file_utils.is_min_sized(osm_input_path, min_size)
