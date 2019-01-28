@@ -142,7 +142,7 @@ def intersection_tuple_to_record(names_tuple, coord_string, separator='&', def_v
     return ret_val, valid
 
 
-def to_csv(intersections, csv_file_path, source='trimet'):
+def to_csv(intersections, csv_file_path, source='transit'):
     """
     turn list returned by extract_intersections() into a .csv file
     note: the output format follows pelias transit .csv format (Oct 2018)
