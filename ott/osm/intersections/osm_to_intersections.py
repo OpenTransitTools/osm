@@ -130,8 +130,10 @@ def intersection_tuple_to_record(names_tuple, coord_string, separator='&', def_v
     """
     ret_val = def_val
     try:
-        ll = coord_string.split(',')
         ret_val['name'] = "{} {} {}".format(names_tuple[0], separator, names_tuple[1])
+        ret_val['street'] = names_tuple[0]
+        ret_val['cross_street'] = names_tuple[1]
+        ll = coord_string.split(',')
         ret_val['lon'] = float(ll[1])
         ret_val['lat'] = float(ll[0])
         valid = True
@@ -140,19 +142,19 @@ def intersection_tuple_to_record(names_tuple, coord_string, separator='&', def_v
     return ret_val, valid
 
 
-def to_csv(intersections, csv_file_path):
+def to_csv(intersections, csv_file_path, source='trimet'):
     """
     turn list returned by extract_intersections() into a .csv file
     note: the output format follows pelias transit .csv format (Oct 2018)
           format may change for generic pelias .csv reader
     """
     with open(csv_file_path, mode='w') as csv_file:
-        fieldnames = ['id', 'name', 'address', 'zipcode', 'lon', 'lat', 'layer_id']
+        fieldnames = ['id', 'name', 'street', 'cross_street', 'address', 'zipcode', 'lon', 'lat', 'layer_id', 'source']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
-        for n, i in enumerate(intersections):
-            rec = {'id': n, 'layer_id': 'intersections'}
-            rec, is_valid = intersection_tuple_to_record(i, intersections[i], def_val=rec)
+        for i, names in enumerate(intersections):
+            rec = {'id': i+1, 'layer_id': 'intersections', 'source': source}
+            rec, is_valid = intersection_tuple_to_record(names, intersections[names], def_val=rec)
             if is_valid:
                 writer.writerow(rec)
 
