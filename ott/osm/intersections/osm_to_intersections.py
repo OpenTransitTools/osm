@@ -153,7 +153,7 @@ def to_csv(intersections, csv_file_path, source='transit'):
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         for i, names in enumerate(intersections):
-            rec = {'id': i+1, 'layer_id': 'intersections', 'source': source}
+            rec = {'id': i+1, 'layer_id': 'intersection', 'source': source}
             rec, is_valid = intersection_tuple_to_record(names, intersections[names], def_val=rec)
             if is_valid:
                 writer.writerow(rec)

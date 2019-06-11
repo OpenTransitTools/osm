@@ -150,9 +150,9 @@ class OsmCache(CacheBase):
         """
         generate intersections .csv from the configured main .osm file (e.g., or-wa.osm)
         """
-        intersections = self.config.get_json('intersections')
-        if intersections:
-            csv_path = os.path.join(self.cache_dir, intersections)
+        intersection_file = self.config.get_json('intersection_out_file')
+        if intersection_file:
+            csv_path = os.path.join(self.cache_dir, intersection_file)
             log.info("exporting intersections to file {}".format(csv_path))
             osm_to_intersections(self.osm_path, csv_path)
 
