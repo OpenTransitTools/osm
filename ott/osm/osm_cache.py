@@ -214,6 +214,9 @@ class OsmCache(CacheBase):
     def intersections_cache(cls):
         """
         generate intersections .csv from cached .osm file
+
+        :example: bin/osm-intersections -o ott/osm/cache/hillsboro.osm | grep -i cherr
+        :see: https://ws-st.trimet.org/pelias/v1/search?sources=osm,oa,transit&text=NE%20Century%20%26%20NE%20Cherry
         """
         OsmCache().intersections_export()
 
@@ -227,8 +230,6 @@ class OsmCache(CacheBase):
         """
         generate other .osm file(s)
         :exmple:  bin/osm_other_exports hills
-        :example: bin/osm_intersections -o ott/osm/cache/hillsboro.osm | grep -i cherr
-        :see: https://ws-st.trimet.org/pelias/v1/search?sources=osm,oa,transit&text=NE%20Century%20%26%20NE%20Cherry
         """
         import sys
         name = sys.argv[1] if len(sys.argv) > 1 else None

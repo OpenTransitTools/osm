@@ -174,7 +174,7 @@ def main():
         file = os.path.join(dir, 'tests', 'data', 'portland.osm')
         return file
 
-    def cmd_parser(name='bin/osm_intersetions'):
+    def cmd_parser(name='bin/osm-intersetions'):
         from ott.utils.parse.cmdline import osm_cmdline
         parser = osm_cmdline.osm_parser(prog_name=name, osm_required=False)
         parser.add_argument(
