@@ -39,7 +39,7 @@ setup(
     author_email="info@opentransittools.org",
     dependency_links=[
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
-        'git+https://github.com/OpenTransitTools/osmread.git#egg=osmread-1.3.0'
+        'git+https://github.com/dezhin/osmread.git#egg=osmread-1.3.0'
     ],
     license="Mozilla-derived (http://opentransittools.com)",
     url='http://opentransittools.com',
