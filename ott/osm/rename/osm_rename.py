@@ -35,7 +35,6 @@ class OsmRename(object):
             :todo ... add unit tests
             TODO: fix up hacky parts...
         """
-        # import pdb; pdb.set_trace()
         self.osm_input_path = osm_infile_path
         if osm_outfile_path is None or len(osm_outfile_path) == 0:
             osm_outfile_path = osm_infile_path
@@ -114,9 +113,9 @@ class OsmRename(object):
                 xml_str = ET.tostring(xml, encoding="UTF-8", method="html")
                 ret_val = "    {}\n".format(xml_str)
             else:
-                log.warn('{} (line {}) xml element {} found an empty street name value'.format(type, line_num, xml.attrib))
+                log.warning("{} (line {}) xml element {} found an empty street name value".format(type, line_num, xml.attrib))
         else:
-            log.warn('{} (line {}) xml element {} is without a value attribute'.format(type, line_num, xml.attrib))
+            log.warning("{} (line {}) xml element {} is without a value attribute".format(type, line_num, xml.attrib))
 
         return ret_val
 
@@ -143,29 +142,30 @@ class OsmRename(object):
         ret_val = None
         if osm_outfile_path is None:
             osm_outfile_path = osm_infile_path
-        osm = OsmRename(osm_infile_path, osm_outfile_path)
+        ret_val = OsmRename(osm_infile_path, osm_outfile_path, do_bkup=do_bkup)
         return ret_val
 
 
-def add_xml_attribute_to_osm_tag(line, line_num, attribute_name="generator", attribue_val=OsmRename.attrib, append=True):
+def add_xml_attribute_to_osm_tag(line, line_num, attribute_name="generator", attribute_val=OsmRename.attrib, append=True):
     """ a bit hacky <osm> element editing """
     ret_val = line
     try:
+        # import pdb; pdb.set_trace()
         xml = ET.fromstring(line + "</osm>")  # need to fake close elem for ET, since real close is 1000s of lines away
         curr_val = xml.get(attribute_name)
         if append:
-            attribue_val = "{}; {}".format(curr_val, attribue_val)
-        xml.set(attribute_name, attribue_val)
-        ret_val = ET.tostring(xml)
+            attribute_val = "{}; {}".format(curr_val, attribute_val)
+        xml.set(attribute_name, attribute_val)
+        ret_val = ET.tostring(xml, encoding="unicode")
         ret_val = ret_val.replace("</osm>", "").replace("/>", ">")
     except Exception as e:
-        log.warn("couldn't add attribute {} to xml element on line number {}", attribute_name, line_num)
-        log.warn(e)
+        log.warning("couldn't add attribute {} to xml element on line number {}".format(attribute_name, line_num))
+        log.warning(e)
     return ret_val
 
 
 def main():
     """ cmd line processor """
     from ott.utils.parse.cmdline import osm_cmdline
-    p = osm_cmdline.osm_parser_args(prog_name='bin/osm_intersetions', osm_required=True, out_required=False)
+    p = osm_cmdline.osm_parser_args(prog_name="bin/osm_rename", osm_required=True, out_required=False)
     OsmRename(p.osm, p.output)
