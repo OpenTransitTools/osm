@@ -8,13 +8,13 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'ott.utils',
-    'psycopg2',
-    'sqlalchemy',
     'simplejson',
-    'osmread',
-    'protobuf',
-    'pyparsing',
     'shapely',
+    'pyparsing',
+    'protobuf',
+    'sqlalchemy',
+    'psycopg2',
+    'osmread',
 ]
 
 # sys (not windows) dependant dependencies

@@ -222,7 +222,7 @@ class OsmCache(CacheBase):
 
     @classmethod
     def osm_2_pgsql(cls):
-        from osm2pgsql.osm2pgsql import Osm2pgsql
+        from .osm2pgsql.osm2pgsql import Osm2pgsql
         Osm2pgsql().run()
 
     @classmethod
