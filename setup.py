@@ -11,10 +11,10 @@ requires = [
     'simplejson',
     'shapely',
     'pyparsing',
-    'protobuf',
     'sqlalchemy',
     'psycopg2',
     'osmread',
+    'protobuf==3.0.0b3',
 ]
 
 # sys (not windows) dependant dependencies
@@ -39,7 +39,6 @@ setup(
     author_email="info@opentransittools.org",
     dependency_links=[
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
-        'git+https://github.com/dezhin/osmread.git#egg=osmread-1.3.0'
     ],
     license="Mozilla-derived (http://opentransittools.com)",
     url='http://opentransittools.com',
