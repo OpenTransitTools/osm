@@ -13,8 +13,8 @@ requires = [
     'pyparsing',
     'sqlalchemy',
     'psycopg2',
+    'protobuf',
     'osmread',
-    'protobuf==3.0.0b3',
 ]
 
 # sys (not windows) dependant dependencies
@@ -38,6 +38,7 @@ setup(
     author="Open Transit Tools",
     author_email="info@opentransittools.org",
     dependency_links=[
+        'git+https://github.com/dezhin/osmread.git#egg=osmread-0.X._USE_GIT_',
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
     ],
     license="Mozilla-derived (http://opentransittools.com)",
