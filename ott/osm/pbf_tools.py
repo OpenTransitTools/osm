@@ -7,6 +7,7 @@ import os
 import re
 import logging
 log = logging.getLogger(__file__)
+log.setLevel(logging.INFO)
 
 
 class PbfTools(object):

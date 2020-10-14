@@ -99,8 +99,10 @@ class OsmCache(CacheBase):
         if is_updated or force_postprocessing:
             OsmInfo.cache_stats(self.osm_path)
             self.pbf_tools.osm_to_pbf(self.osm_path)
-            cull_osm = self.pbf_tools.cull_transit_from_osm(self.osm_path)
-            self.pbf_tools.osm_to_pbf(cull_osm)
+            self.pbf_tools.osm_to_pbf(self.osm_carto_path)
+            # note: cull transit file is used for Pelias (no confusing stop / station overlap)
+            osm_cull_transit_path = self.pbf_tools.cull_transit_from_osm(self.osm_path)
+            self.pbf_tools.osm_to_pbf(osm_cull_transit_path)
             self.other_exports()
             self.intersections_export()
             self.osm_2_pgsql()
