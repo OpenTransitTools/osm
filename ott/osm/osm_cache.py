@@ -20,6 +20,8 @@ class OsmCache(CacheBase):
     """
     osm_name = None
     osm_path = None
+    pbf_name = None
+    pbf_path = None
 
     osm_carto_name = None
     osm_carto_path = None
@@ -44,6 +46,8 @@ class OsmCache(CacheBase):
         name = self.config.get('name')
         self.osm_name = string_utils.safe_append(name, ".osm")
         self.osm_path = string_utils.safe_path_join(self.cache_dir, self.osm_name)
+        self.pbf_name = string_utils.safe_append(name, ".osm.pbf")
+        self.pbf_path = string_utils.safe_path_join(self.cache_dir, self.pbf_name)
 
         self.osm_carto_name = string_utils.safe_append(name, "-carto.osm")
         self.osm_carto_path = string_utils.safe_path_join(self.cache_dir, self.osm_carto_name)
@@ -175,19 +179,26 @@ class OsmCache(CacheBase):
         return ret_val
 
     @classmethod
-    def check_osm_file_against_cache(cls, app_dir, force_update=False):
+    def check_osm_file_against_cache(cls, app_dir, force_update=False, use_pbf=False):
         """
         check the .osm file in this cache against an osm file in another app's directory (e.g., OTP folder)
         """
         ret_val = False
         try:
             osm = OsmCache()
-            app_osm_path = os.path.join(app_dir, osm.osm_name)
-            refresh = file_utils.is_a_newer_than_b(osm.osm_path, app_osm_path, offset_minutes=10)
+            if use_pbf:
+                name = osm.pbf_name
+                path = osm.pbf_path
+            else:
+                name = osm.osm_name
+                path = osm.osm_path
+
+            app_osm_path = os.path.join(app_dir, name)
+            refresh = file_utils.is_a_newer_than_b(path, app_osm_path, offset_minutes=10)
             if refresh or force_update:
                 # step a: copy the .osm file to this foreign cache
-                log.info("cp {} to {}".format(osm.osm_name, app_dir))
-                osm.cp_cached_file(osm.osm_name, app_dir)
+                log.info("cp {} to {}".format(name, app_dir))
+                osm.cp_cached_file(name, app_dir)
 
                 # step b: copy the stats file to this foreign cache
                 cache_file = OsmInfo.get_stats_file_path(osm.osm_name)
