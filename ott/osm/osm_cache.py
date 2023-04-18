@@ -151,6 +151,7 @@ class OsmCache(CacheBase):
             out_path = os.path.join(self.cache_dir, e['out'])
             top, bottom, left, right = self.config.get_bbox(e['bbox'])
             self.clip_to_bbox(in_path, out_path, top, bottom, left, right)
+            self.pbf_tools.osm_to_pbf(out_path)
 
     def intersections_export(self):
         """
