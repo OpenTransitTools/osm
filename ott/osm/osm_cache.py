@@ -71,10 +71,11 @@ class OsmCache(CacheBase):
         pbf_url = self.config.get('pbf_url')
         pbf_path = self.pbf_tools.path_from_url(pbf_url, self.cache_dir)
 
-        # step 1: download new osm pbf file if it's not new
+        # step 1: download new osm pbf file if it's not new or undersized
+        is_new = self.is_recent(pbf_path)
         fresh = self.is_fresh_in_cache(pbf_path)
         sized = file_utils.is_min_sized(pbf_path, min_size)
-        if force_update or not fresh or not sized:
+        if (force_update and not is_new) or (not fresh or not sized):
             if not sized: log.info("PBF file {} too small ... UPDATING.".format(pbf_path))
             elif not fresh: log.info("PBF file {} too old ... UPDATING.".format(pbf_path))
             meta_url = self.config.get('meta_url')
@@ -95,6 +96,9 @@ class OsmCache(CacheBase):
                 is_updated = False
 
         # step 3: .osm file check
+        if file_utils.is_a_newer_than_b(self.osm_carto_path, self.osm_path, offset_minutes=10):
+            self.clip_to_bbox(self.osm_carto_path, self.osm_path)
+            is_updated = True
         if not file_utils.is_min_sized(self.osm_path, min_size):
             e = "OSM file {} is not big enough".format(self.osm_path)
             raise Exception(e)
@@ -124,13 +128,13 @@ class OsmCache(CacheBase):
 
         The non-carto file is clipped strictly to the bbox. It's better use is the trip planner, geocoder, etc...
         """
-        self.clip_to_bbox(pbf_path, self.osm_carto_path, self.top, self.bottom, self.left, self.right, complete=True)
+        self.clip_to_bbox(pbf_path, self.osm_carto_path, complete=True)
         if rename:
             OsmRename.rename(self.osm_carto_path, do_bkup=False)
-        self.clip_to_bbox(self.osm_carto_path, self.osm_path, self.top, self.bottom, self.left, self.right)
+        self.clip_to_bbox(self.osm_carto_path, self.osm_path)
 
-    def clip_to_bbox(self, in_path, out_path, top, bottom, left, right, complete=False):
-        """ clip to bbox ... good for cmdline """
+    def clip_to_bbox_spec(self, in_path, out_path, top, bottom, left, right, complete):
+        """ clip to specified bbox """
         if not file_utils.exists(in_path):
             in_path = os.path.join(self.cache_dir, in_path)
 
@@ -138,6 +142,9 @@ class OsmCache(CacheBase):
             self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right)
         else:
             self.pbf_tools.clip_to_bbox(in_path, out_path, top, bottom, left, right, crel="", cway="")
+
+    def clip_to_bbox(self, in_path, out_path, complete=False):
+        self.clip_to_bbox_spec(in_path, out_path, self.top, self.bottom, self.left, self.right, complete)
 
     def other_exports(self, name=None):
         """
@@ -150,7 +157,7 @@ class OsmCache(CacheBase):
             in_path = os.path.join(self.cache_dir, e['in'])
             out_path = os.path.join(self.cache_dir, e['out'])
             top, bottom, left, right = self.config.get_bbox(e['bbox'])
-            self.clip_to_bbox(in_path, out_path, top, bottom, left, right)
+            self.clip_to_bbox_spec(in_path, out_path, top, bottom, left, right, complete=True)
             self.pbf_tools.osm_to_pbf(out_path)
 
     def intersections_export(self):
