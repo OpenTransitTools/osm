@@ -58,6 +58,7 @@ setup(
         osm_stats = ott.osm.stats.osm_info:OsmInfo.print_stats_via_cmdline
         osm_stats_cfg = ott.osm.stats.osm_info:OsmInfo.print_stats_via_config
         osm_rename = ott.osm.rename.osm_rename:main
+        osm_make_raw = ott.osm.osm_cache:make_raw_osm
         osm_other_exports = ott.osm.osm_cache:OsmCache.exports
         osm_abbr_tester = ott.osm.tests.osm_abbr_tester:main
         osm-intersections = ott.osm.intersections.osm_to_intersections:main

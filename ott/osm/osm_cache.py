@@ -52,6 +52,9 @@ class OsmCache(CacheBase):
         self.osm_carto_name = string_utils.safe_append(name, "-carto.osm")
         self.osm_carto_path = string_utils.safe_path_join(self.cache_dir, self.osm_carto_name)
 
+        self.osm_raw_name = string_utils.safe_append(name, "-raw.osm")
+        self.osm_raw_path = string_utils.safe_path_join(self.cache_dir, self.osm_raw_name)
+
         # step 3: pbf tools (for downloading new data from geofabrik, as well as converting the .pbf to our .osm)
         osmosis_path = self.config.get('osmosis_path', def_val=os.path.join(self.this_module_dir, 'osmosis', 'bin', 'osmosis'))
         self.pbf_tools = PbfTools(self.cache_dir, osmosis_path)
@@ -129,6 +132,7 @@ class OsmCache(CacheBase):
         The non-carto file is clipped strictly to the bbox. It's better use is the trip planner, geocoder, etc...
         """
         self.clip_to_bbox(pbf_path, self.osm_carto_path, complete=True)
+        self.make_raw_osm(self.osm_carto_path)  # save off clipped OSM to 'raw' before renaming (for pelias)
         if rename:
             OsmRename.rename(self.osm_carto_path, do_bkup=False)
         self.clip_to_bbox(self.osm_carto_path, self.osm_path)
@@ -185,6 +189,14 @@ class OsmCache(CacheBase):
         else:
             "[{}, {}, {}, {}]".format(self.left, self.bottom, self.right, self.top)
         return ret_val
+
+    def make_raw_osm(self, osm_path="us-west-latest.osm.pbf", cull_transit=True):
+        """ no street prefix/suffix renames in these .osm .pbf files """
+        self.clip_to_bbox(osm_path, self.osm_raw_path)
+        if cull_transit:
+            p = self.pbf_tools.cull_transit_from_osm(self.osm_raw_path, self.osm_raw_path + ".tmp")
+            file_utils.mv(p, self.osm_raw_path)
+        self.pbf_tools.osm_to_pbf(self.osm_raw_path)
 
     @classmethod
     def check_osm_file_against_cache(cls, app_dir, force_update=False, use_pbf=False):
@@ -270,3 +282,10 @@ def clip_rename():
     o = clip_from_pbf()
     OsmRename.rename(o.osm_path, do_bkup=False)
     OsmInfo.cache_stats(o.osm_path)
+
+
+def make_raw_osm():
+    #import pdb; pdb.set_trace()
+    o = OsmCache()
+    o.make_raw_osm()
+    return o

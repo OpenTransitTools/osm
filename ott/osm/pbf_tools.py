@@ -73,7 +73,7 @@ class PbfTools(object):
         (file paths derrived by the cache paths & config)
         outputs: both an .osm file and a .pbf file of the clipped area
         """
-        in_type = "xml" if input_path.endswith(".osm") else "pbf-fast"
+        in_type = "xml" if input_path.endswith(".osm") else "pbf"
         out_type = "xml" if output_path.endswith(".osm") else "pbf"
 
         osmosis_exe = self.check_osmosis_exe()
