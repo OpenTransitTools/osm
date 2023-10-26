@@ -11,7 +11,7 @@ requires = [
     'simplejson',
     'shapely',
     'pyparsing',
-    'sqlalchemy',
+    'sqlalchemy == 1.4.49',
     'psycopg2',
     'protobuf',
     'osmread',
