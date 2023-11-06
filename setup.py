@@ -12,7 +12,7 @@ requires = [
     'shapely',
     'pyparsing',
     'sqlalchemy == 1.4.49',
-    'psycopg2',
+    'psycopg2-binary',
     'protobuf',
     'osmread',
 ]
