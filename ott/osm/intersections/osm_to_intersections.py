@@ -65,8 +65,8 @@ def extract_intersections(osm):
         if child.tag == 'way':
             is_road = False
 
-            # TODO: make road types configurable ? , 'service'
-            road_types = ('primary', 'secondary', 'residential', 'tertiary', 'unclassified')
+            # NOTE: updated 5/2024 ... missing 'trunk' ala MLK Blvd, and also added busway, ped and road
+            road_types = ('trunk', 'primary', 'secondary', 'residential', 'tertiary', 'busway', 'pedestrian', 'road', 'unclassified')
             for item in child:
                 if item.tag == 'tag' and item.attrib['k'] == 'highway' and item.attrib['v'] in road_types:
                     is_road = True
