@@ -48,6 +48,7 @@ COMMIT_EDITMSG
 *.iml
 .DS_Store
 c:/
+.history/
 
 # C extensions
 *.so
@@ -101,3 +102,4 @@ nohup.out
 gtfsdb.db.bkup
 x
 .pydevproject
+.vscode

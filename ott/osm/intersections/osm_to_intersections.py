@@ -51,11 +51,11 @@ def extract_intersections(osm):
     # step 1: parse either XML string or file
     if '<' in osm and '>' in osm:
         tree = ET.fromstring(osm)
-        children = tree.getchildren()
+        children = list(tree)
     else:
         tree = ET.parse(osm)
         root = tree.getroot()
-        children = root.getchildren()
+        children = list(root)
 
     log.info("number of osm nodes read in: {}".format(len(children)))
 
