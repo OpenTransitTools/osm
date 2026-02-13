@@ -7,41 +7,36 @@ on:
   pull_request:
 
 jobs:
-  unit-tests:
-    name: Unit Tests (containerized run)
+  all-tests:
+    name: Run All Tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build image from repo Dockerfile
-        run: docker/buildDocker.sh
-
-      - name: Run non-docker tests in container
-        run: docker run --rm open-transit-tools/osm:python3.14 python -m unittest -v ott.osm.tests.test
-
-  docker-tests:
-    name: Docker API Script Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python for pytest runner
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
 
-      - name: Build image from repo Dockerfile
-        run: docker/buildDocker.sh
+      - name: Install Poetry
+        run: pipx install "poetry==2.3.2"
 
-      - name: Container smoke check
-        run: docker run --rm open-transit-tools/osm:python3.14 osm_stats_cfg || true
+      - name: Install dependencies
+        run: poetry install --no-interaction
 
-      - name: Install pytest
-        run: python -m pip install --upgrade pip pytest
+      - name: Verify package import
+        run: poetry run python -c "import ott; import ott.osm"
 
-      - name: Run docker-backed API tests
-        run: python -m pytest -v ott/osm/tests/docker/test_project_scripts_docker.py
+      - name: Ensure pytest is available
+        run: poetry run python -m pip install --upgrade pytest
+
+      - name: Run unittest suite (ott.osm.tests.test)
+        run: poetry run python -m unittest -v ott.osm.tests.test
+
+      - name: Run osm_abbr_tester.py
+        run: poetry run python -m ott.osm.tests.osm_abbr_tester
+
+      - name: Run docker pytest suite
+        run: poetry run pytest -v ott/osm/tests/docker/test_project_scripts_docker.py

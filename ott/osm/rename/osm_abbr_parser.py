@@ -140,7 +140,7 @@ class OsmAbbrParser(object):
             #if "OMSI" in orig: import pdb; pdb.set_trace()
             f = self.dict(orig)
             if f and len(f['label_text']) > 0:
-                ret_val = f['label_text'].replace("<", "%3C").replace(">", "%3E")
+                ret_val = f['label_text']
         except Exception as e:
             log.debug(e)
         return ret_val
@@ -234,14 +234,14 @@ class OsmAbbrParser(object):
         """
         # street types -- used for both parser and replacement
         csv_path = os.path.join(self.this_module_dir, 'config', fn)
-        f = open(csv_path, 'r')
-        reader = csv.DictReader(f)
         strings = ""
         l = []
-        for row in reader:
-            # csv read adds strange utf8 pre-character \xc3 ... this removes that character
-            row['str'] = compat_2_to_3.decode(row['str'])
-            strings += row['str'] + " " + row['replace'] + " "
-            l.append(row)
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                # csv read adds strange utf8 pre-character \xc3 ... this removes that character
+                row['str'] = compat_2_to_3.decode(row['str'])
+                strings += row['str'] + " " + row['replace'] + " "
+                l.append(row)
 
         return strings, l
