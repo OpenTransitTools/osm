@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<osm generator="Osmosis 0.45; streets renamed by OpenTransitTools" version="0.6">
+<osm version="0.6" generator="Osmosis 0.45; streets renamed by OpenTransitTools on Friday, February 13, 2026">
   <bounds minlon="-122.70000" minlat="45.45000" maxlon="-122.62000" maxlat="45.54000" origin="0.45"/>
 
   <node id="523474399" version="4" timestamp="2017-01-31T17:40:19Z" uid="81676" user="Peter Dobratz" changeset="45691940" lat="45.4904112" lon="-122.6230366">
@@ -11,7 +11,7 @@
     <tag k="addr:city" v="Portland"/>
     <tag k="addr:unit" v="A"/>
     <tag k="addr:state" v="OR"/>
-    <tag k="addr:street" v="SE Cesar E. Chavez Blvd"/>
+    b'<tag k="addr:street" v="SE Cesar E. Chavez Blvd"/>'
     <tag k="addr:postcode" v="97202"/>
     <tag k="opening_hours" v="Mo-Fr 05:00-19:00; Fr,Sa 05:30-19:00"/>
     <tag k="internet_access" v="wlan"/>
@@ -27,13 +27,13 @@
     <nd ref="1391266409"/>
     <nd ref="1222278580"/>
     <nd ref="1504554286"/>
-    <tag k="name" v="NE Cesar E. Chavez Blvd"/>
+    b'<tag k="name" v="NE Cesar E. Chavez Blvd"/>'
     <tag k="lanes" v="2"/>
     <tag k="oneway" v="yes"/>
     <tag k="bicycle" v="yes"/>
     <tag k="highway" v="secondary"/>
     <tag k="maxspeed" v="30 mph"/>
-    <tag k="old_name" v="NE 39th Ave"/>
+    b'<tag k="old_name" v="NE 39th Ave"/>'
     <tag k="sidewalk" v="right"/>
     <tag k="turn:lanes" v="through;right|right"/>
     <tag k="RLIS:bicycle" v="caution_area"/>

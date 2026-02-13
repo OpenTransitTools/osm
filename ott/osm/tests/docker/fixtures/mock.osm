@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="unit-test">
+  <node id="1" lat="45.5100" lon="-122.6900" version="1" timestamp="2024-01-01T00:00:00Z" changeset="1"/>
+  <node id="2" lat="45.5105" lon="-122.6895" version="1" timestamp="2024-01-01T00:00:00Z" changeset="1"/>
+  <node id="3" lat="45.5095" lon="-122.6905" version="1" timestamp="2024-01-01T00:00:00Z" changeset="1"/>
+  <way id="10" version="1" timestamp="2024-01-01T00:00:00Z" changeset="1">
+    <nd ref="1"/>
+    <nd ref="2"/>
+    <tag k="highway" v="residential"/>
+    <tag k="name" v="Alpha Street"/>
+  </way>
+  <way id="11" version="1" timestamp="2024-01-01T00:00:00Z" changeset="1">
+    <nd ref="1"/>
+    <nd ref="3"/>
+    <tag k="highway" v="primary"/>
+    <tag k="name" v="Beta Avenue"/>
+  </way>
+</osm>
