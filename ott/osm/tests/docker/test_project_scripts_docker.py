@@ -3,9 +3,12 @@ from __future__ import annotations
 import shutil
 import subprocess
 import tomllib
+import logging
 from pathlib import Path
 
 import pytest
+
+log = logging.getLogger(__name__)
 
 
 ROOT_DIR = Path(__file__).resolve().parents[4]
@@ -110,6 +113,7 @@ def _run_script_in_docker(image: str, work_dir: Path, cmd: str) -> subprocess.Co
         "-lc",
         f"python -m pip install --quiet 'setuptools<81' && {cmd}",
     ]
+    log.info(f"Running in docker: {' '.join(docker_cmd)}")
     return _run(docker_cmd)
 
 
@@ -122,6 +126,7 @@ def test_command_map_covers_all_project_scripts() -> None:
 @pytest.mark.parametrize("script_name", _project_scripts())
 def test_project_script_via_docker(script_name: str, docker_image: str, docker_workdir: Path) -> None:
     cmd = SCRIPT_COMMANDS[script_name]
+    log.info(f"Testing {script_name} with command: {cmd}")
     result = _run_script_in_docker(docker_image, docker_workdir, cmd)
 
     expected_codes = EXPECTED_EXIT_CODES.get(script_name, {0})

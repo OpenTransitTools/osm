@@ -53,16 +53,16 @@ class OsmAbbrParser(object):
                                  |
                                  type_ + FollowedBy(name_string) + FollowedBy(~suffix)
                                  ), joinString=" ", adjacent=False)
-                     ).setName("streetName")
+                     ).set_name("streetName")
 
         # basic street address grammer
-        nm = street_name.setResultsName("name")
-        tp = type_.setResultsName("type")
-        pre = prefix.setResultsName("prefix") 
+        nm = street_name.set_results_name("name")
+        tp = type_.set_results_name("type")
+        pre = prefix.set_results_name("prefix")
         nm_type = nm + tp
         pre_nm_type = pre + nm + tp
         pre_nm = pre + nm
-        suf = suffix.setResultsName("suffix") 
+        suf = suffix.set_results_name("suffix")
         suf_nm_type = nm + tp + suf
         suf_nm = nm + suf
         self.streetAddress = ( 
@@ -97,7 +97,7 @@ class OsmAbbrParser(object):
                 r['prefix'] = d['prefix']
                 r['suffix'] = d['suffix']
             else:
-                p = self.streetAddress.parseString(s)
+                p = self.streetAddress.parse_string(s)
                 r['name'] = p.name
                 r['type'] = self.find_replace(self.street_types, p.type)
                 r['suffix'] = self.find_replace(self.dir_types,    p.suffix)

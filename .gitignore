@@ -110,6 +110,7 @@ x
 !ott/**
 !docker/
 !docker/**
+!ott/osm/tests/docker/**
 
 # Keep recursive editor/system and generated artifacts ignored even inside ott/ and docker/.
 **/.DS_Store
