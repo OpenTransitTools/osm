@@ -36,7 +36,11 @@ jobs:
         shell: bash
         run: |
           RAW_REF="${GITHUB_REF_NAME}"
-          TAG="$(echo "${RAW_REF}" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
+          if [ "${RAW_REF}" = "main" ]; then
+            TAG="latest"
+          else
+            TAG="$(echo "${RAW_REF}" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
+          fi
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "image=ghcr.io/opentransittools/osm:${TAG}" >> "$GITHUB_OUTPUT"
 
