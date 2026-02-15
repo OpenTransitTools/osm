@@ -1,32 +1,226 @@
 OSM
 ===
 
-The osm project 
+OpenTransitTools utilities for downloading, clipping, normalizing, exporting, and loading OpenStreetMap data.
 
-install:
-  1. install python 2.7, along easy_install, zc.buildout ("zc.buildout==1.5.2") and git
-  1. git clone https://github.com/OpenTransitTools/osm.git
-  1. cd osm
-  1. buildout
-  1. purpose: cached GTFS .zip files into [gtfsdb](http://gtfsdb.com}
-     The [./config/app.ini](../../../config/app.ini) file controls the list of gtfs feeds cached.
-  1. run: bin/osm_update (optional: -ini <name>.ini | force_update)
-  1. build OSMOSIS:
-  1.   cd ott/osm/osmosis
-  1.   install.sh
-  1.   cd -
+## Docker-First Usage
+This project is intended to be run through Docker.
+Build the image once, then run API commands from the container.
 
-  1. git update-index --assume-unchanged .pydevproject
-  1. NOTE: system packages necessary for things to work may include pre-built Shapely, or else the following system packages: 
-  1. Install these packages
-     - `yum install protobuf protobuf-devel tokyocabinet tokyocabinet-devel geos geos-devel  libxml2 libxslt libxml2-devel libxslt-devel
-    `
-  1. Or Build and install Protobuf and TokyoCabinet from source (MacOSX):
-     - git clone https://github.com/google/protobuf 
-     - wget http://tokyocabinet.sourceforge.net/tokyocabinet-1.4.25.tar.gz
+Build targets:
+- `test`: includes test dependencies (`pytest`, `coverage`) for local/CI test runs.
+- `prod`: lean runtime image for publish/deploy.
 
+## Requirements
+- Docker
+- Optional: bind mounts for persistent cache/input/output files
 
-run:
-  - bin/test ... this cmd will run osm's unit tests (see: http://docs.zope.org/zope.testrunner/#some-useful-command-line-options-to-get-you-started)
-  - bin/osm_rename --osm ott/osm/tests/data/test_data_2018.osm -out renamed.osm
-  - bin/osm_intersections --osm ott/osm/tests/data/test_data_2018.osm -out intersections.osm
+## Configuration
+Primary runtime config is `config/app.ini`.
+
+Important keys in `[osm]`:
+- `pbf_url`: source `.osm.pbf` download URL
+- `meta_url`: metadata URL for freshness checks
+- `cache_dir`: output/cache directory
+- `name`: base dataset name
+- `bbox`: clipping bounds key
+- `osmosis_path`: osmosis executable path
+- `other_exports`: additional bbox exports
+- `intersection_out_file`: intersection CSV filename
+
+## Build The Image
+From repo root:
+```bash
+docker/buildDocker.sh
+```
+
+Default behavior from `docker/buildDocker.sh`:
+```bash
+IMAGE_NAME=ghcr.io/opentransittools/osm
+BUILD_TARGET=test
+TAG=<auto>
+# TAG auto-rules: master -> latest, otherwise sanitized branch name
+```
+
+Override image name/tag/target:
+```bash
+IMAGE_NAME=ghcr.io/opentransittools/osm TAG=feature-x BUILD_TARGET=prod docker/buildDocker.sh
+```
+
+## Docker Compose
+Use `docker/compose.yml` for repeatable command runs with mounted config, cache, input, and output.
+
+Mounted paths:
+- Host `config/app.ini` -> `/osm/config/app.ini` (read-only)
+- Host `ott/osm/cache` -> `/osm/ott/osm/cache`
+- Host `data/input` -> `/data/input`
+- Host `data/output` -> `/data/output`
+
+Build and run with Compose:
+```bash
+docker compose -f docker/compose.yml build
+docker compose -f docker/compose.yml run --rm osm osm_update
+```
+
+Compose is configured to build the `test` target.
+
+Compose API examples:
+```bash
+# Full configured update pipeline
+docker compose -f docker/compose.yml run --rm osm osm_update
+
+# Rename an input file from mounted /data/input to /data/output
+docker compose -f docker/compose.yml run --rm osm \
+  osm_rename --osm /data/input/in.osm --output /data/output/in-renamed.osm
+
+# Stats on an input file
+docker compose -f docker/compose.yml run --rm osm \
+  osm_stats --osm /data/input/in.osm
+
+# Convert OSM XML to PBF using osmosis in-container
+docker compose -f docker/compose.yml run --rm osm \
+  osm_to_pbf --osm /data/input/in.osm --pbf /data/output/in.osm.pbf
+
+# Generate intersections CSV
+docker compose -f docker/compose.yml run --rm osm \
+  osm-intersections --osm /data/input/in.osm --csv /data/output/intersections.csv
+
+# Run configured additional exports
+docker compose -f docker/compose.yml run --rm osm osm_other_exports
+
+# Run abbreviation tester utility
+docker compose -f docker/compose.yml run --rm osm osm_abbr_tester
+
+# Open an interactive shell in the compose service
+docker compose -f docker/compose.yml run --rm osm bash
+```
+
+## Run Pattern
+General pattern:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest <command> [args...]
+```
+
+Use custom config:
+```bash
+docker run --rm -it \
+  -v "$PWD/config/app.ini:/osm/config/app.ini:ro" \
+  ghcr.io/opentransittools/osm:latest <command> [args...]
+```
+
+## Command Reference
+### `osm_update`
+Full cache/update pipeline. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_update
+```
+
+### `osm_clip_from_pbf`
+Clip configured region from source `.pbf`. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_clip_from_pbf
+```
+
+### `osm_clip_rename`
+Clip and rename street tags. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_clip_rename
+```
+
+### `osm_make_raw`
+Build raw clipped OSM/PBF without renaming. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_make_raw
+```
+
+### `osm_rename`
+Rename abbreviations in OSM tags. Example:
+```bash
+docker run --rm -it -v "$PWD:/work" -w /work \
+  ghcr.io/opentransittools/osm:latest osm_rename --osm ./data/region.osm --output ./data/region-renamed.osm
+```
+
+### `osm_stats`
+Compute/read cached stats. Example:
+```bash
+docker run --rm -it -v "$PWD:/work" -w /work \
+  ghcr.io/opentransittools/osm:latest osm_stats --osm ./cache/or-wa.osm
+```
+
+### `osm_stats_cfg`
+Stats for configured cached OSM. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_stats_cfg
+```
+
+### `osm_to_pbf`
+Convert `.osm` XML to `.pbf` via osmosis. Example:
+```bash
+docker run --rm -it -v "$PWD:/work" -w /work \
+  ghcr.io/opentransittools/osm:latest osm_to_pbf --osm ./cache/or-wa.osm --pbf ./cache/or-wa.osm.pbf
+```
+
+### `osm_cull_transit`
+Cull transit features via `tagtransform.xml`. Example:
+```bash
+docker run --rm -it -v "$PWD:/work" -w /work \
+  ghcr.io/opentransittools/osm:latest osm_cull_transit --osm ./cache/or-wa.osm
+```
+
+### `osm-intersections`
+Extract intersections from OSM XML. Example:
+```bash
+docker run --rm -it -v "$PWD:/work" -w /work \
+  ghcr.io/opentransittools/osm:latest osm-intersections --osm ./cache/or-wa.osm --csv ./cache/intersections.csv
+```
+
+### `osm-intersections_cache`
+Intersection CSV for configured cache. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm-intersections_cache
+```
+
+### `osm_other_exports`
+Run configured export list. Examples:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_other_exports
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_other_exports hillsboro
+```
+
+### `osm_to_pgsql`
+Load OSM into PostgreSQL/PostGIS. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_to_pgsql
+```
+
+### `osm_abbr_tester`
+Run abbreviation parser exercise utility. Example:
+```bash
+docker run --rm -it ghcr.io/opentransittools/osm:latest osm_abbr_tester
+```
+
+## Docker Test Scenario
+Build the test target image:
+```bash
+BUILD_TARGET=test docker/buildDocker.sh
+```
+
+Run docker API script tests:
+```bash
+poetry run pytest -v ott/osm/tests/docker/test_project_scripts_docker.py
+```
+
+Notes:
+- Script smoke tests intentionally mount `fake_osmosis.sh` for deterministic behavior.
+- Tests also verify the real osmosis binary exists at `/osm/bin/osmosis`.
+
+## CI Image Targets
+- `.github/workflows/ci.yml` runs tests and coverage.
+- `.github/workflows/container.yml` publishes the `prod` Docker target.
+- Published tags:
+  - `master` branch -> `latest`
+  - other branches -> sanitized branch name
+
+## Notes
+- `docker/install_osmosis.sh` installs osmosis during image build.
+- `docker/entrypoint.sh` runs whatever command you pass.
