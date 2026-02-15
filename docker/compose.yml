@@ -1,0 +1,17 @@
+services:
+  osm:
+    image: ghcr.io/opentransittools/osm:${OSM_IMAGE_TAG:-latest}
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    working_dir: /osm
+    stdin_open: true
+    tty: true
+    command: bash
+    volumes:
+      - ../config/app.ini:/osm/config/app.ini:ro
+      - ../ott/osm/cache:/osm/ott/osm/cache
+      - ../data/input:/data/input
+      - ../data/output:/data/output
+      - ..:/workspace

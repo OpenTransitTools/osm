@@ -47,7 +47,9 @@ COMMIT_EDITMSG
 .idea/*
 *.iml
 .DS_Store
+**/.DS_Store
 c:/
+.history/
 
 # C extensions
 *.so
@@ -101,3 +103,20 @@ nohup.out
 gtfsdb.db.bkup
 x
 .pydevproject
+.vscode
+
+# Always allow repository source and docker definitions.
+!ott/
+!ott/**
+!docker/
+!docker/**
+!ott/osm/tests/docker/**
+
+# Keep recursive editor/system and generated artifacts ignored even inside ott/ and docker/.
+**/.DS_Store
+**/.vscode
+**/.vscode/**
+**/.history
+**/.history/**
+**/__pycache__/
+**/*.py[cod]

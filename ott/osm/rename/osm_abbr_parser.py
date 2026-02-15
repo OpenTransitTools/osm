@@ -53,16 +53,16 @@ class OsmAbbrParser(object):
                                  |
                                  type_ + FollowedBy(name_string) + FollowedBy(~suffix)
                                  ), joinString=" ", adjacent=False)
-                     ).setName("streetName")
+                     ).set_name("streetName")
 
         # basic street address grammer
-        nm = street_name.setResultsName("name")
-        tp = type_.setResultsName("type")
-        pre = prefix.setResultsName("prefix") 
+        nm = street_name.set_results_name("name")
+        tp = type_.set_results_name("type")
+        pre = prefix.set_results_name("prefix")
         nm_type = nm + tp
         pre_nm_type = pre + nm + tp
         pre_nm = pre + nm
-        suf = suffix.setResultsName("suffix") 
+        suf = suffix.set_results_name("suffix")
         suf_nm_type = nm + tp + suf
         suf_nm = nm + suf
         self.streetAddress = ( 
@@ -97,7 +97,7 @@ class OsmAbbrParser(object):
                 r['prefix'] = d['prefix']
                 r['suffix'] = d['suffix']
             else:
-                p = self.streetAddress.parseString(s)
+                p = self.streetAddress.parse_string(s)
                 r['name'] = p.name
                 r['type'] = self.find_replace(self.street_types, p.type)
                 r['suffix'] = self.find_replace(self.dir_types,    p.suffix)
@@ -140,7 +140,7 @@ class OsmAbbrParser(object):
             #if "OMSI" in orig: import pdb; pdb.set_trace()
             f = self.dict(orig)
             if f and len(f['label_text']) > 0:
-                ret_val = f['label_text'].replace("<", "%3C").replace(">", "%3E")
+                ret_val = f['label_text']
         except Exception as e:
             log.debug(e)
         return ret_val
@@ -234,14 +234,14 @@ class OsmAbbrParser(object):
         """
         # street types -- used for both parser and replacement
         csv_path = os.path.join(self.this_module_dir, 'config', fn)
-        f = open(csv_path, 'r')
-        reader = csv.DictReader(f)
         strings = ""
         l = []
-        for row in reader:
-            # csv read adds strange utf8 pre-character \xc3 ... this removes that character
-            row['str'] = compat_2_to_3.decode(row['str'])
-            strings += row['str'] + " " + row['replace'] + " "
-            l.append(row)
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                # csv read adds strange utf8 pre-character \xc3 ... this removes that character
+                row['str'] = compat_2_to_3.decode(row['str'])
+                strings += row['str'] + " " + row['replace'] + " "
+                l.append(row)
 
         return strings, l

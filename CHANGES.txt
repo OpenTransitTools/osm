@@ -1,3 +1,9 @@
+1.0.0 (unreleased)
+- python 3.14
+- poetry
+- docker
+
+
 0.1.0 (2018-04-15)
 ------------------
 - Initial project setup

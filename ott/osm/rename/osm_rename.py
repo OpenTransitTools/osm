@@ -19,7 +19,8 @@ log = logging.getLogger(__file__)
 class OsmRename(object):
     """ Utility for getting stats on an osm file 
     """
-    attrib = "streets renamed by OpenTransitTools on {}".format(date_utils.pretty_date())
+    marker = "streets renamed by OpenTransitTools"
+    attrib = "{} on {}".format(marker, date_utils.pretty_date())
     bunchsize = 1000000
     rename_cache = {}
 
@@ -64,7 +65,8 @@ class OsmRename(object):
             for line_num, line in enumerate(r):
                 # step 1: check to see if this .osm file has already been renamed
                 if not do_rename and "<osm " in line:
-                    if not self.attrib in line:
+                    # Any prior marker means this file has already been processed.
+                    if self.marker not in line:
                         line = add_xml_attribute_to_osm_tag(line, line_num)
                         do_rename = True
 
@@ -110,7 +112,7 @@ class OsmRename(object):
         if val:
             if len(val) > 0:
                 self.rename_xml_value_attirbute(xml, line_num)
-                xml_str = ET.tostring(xml, encoding="UTF-8", method="html")
+                xml_str = ET.tostring(xml, encoding="unicode", method="html")
                 ret_val = "    {}\n".format(xml_str)
             else:
                 log.warning("{} (line {}) xml element {} found an empty street name value".format(type, line_num, xml.attrib))

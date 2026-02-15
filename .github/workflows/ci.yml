@@ -1,0 +1,58 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  all-tests:
+    name: Run All Tests
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE_FAIL_UNDER: "80"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install Poetry
+        run: pipx install "poetry==2.3.2"
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Verify package import
+        run: poetry run python -c "import ott; import ott.osm"
+
+      - name: Ensure pytest is available
+        run: poetry run python -m pip install --upgrade pytest
+
+      - name: Ensure coverage is available
+        run: poetry run python -m pip install --upgrade coverage
+
+      - name: Run unittest suite with coverage (ott.osm.tests.test)
+        run: poetry run coverage run -m unittest -v ott.osm.tests.test
+
+      - name: Run osm_abbr_tester.py with coverage
+        run: poetry run coverage run --append -m ott.osm.tests.osm_abbr_tester
+
+      - name: Run docker pytest suite with coverage
+        run: poetry run coverage run --append -m pytest -v ott/osm/tests/docker/test_project_scripts_docker.py
+
+      - name: Coverage report
+        run: |
+          poetry run coverage report -m --fail-under=${COVERAGE_FAIL_UNDER}
+          poetry run coverage xml -o coverage.xml
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
