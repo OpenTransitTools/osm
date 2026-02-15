@@ -64,6 +64,37 @@ docker compose -f docker/compose.yml run --rm osm osm_update
 
 Compose is configured to build the `test` target.
 
+Compose API examples:
+```bash
+# Full configured update pipeline
+docker compose -f docker/compose.yml run --rm osm osm_update
+
+# Rename an input file from mounted /data/input to /data/output
+docker compose -f docker/compose.yml run --rm osm \
+  osm_rename --osm /data/input/in.osm --output /data/output/in-renamed.osm
+
+# Stats on an input file
+docker compose -f docker/compose.yml run --rm osm \
+  osm_stats --osm /data/input/in.osm
+
+# Convert OSM XML to PBF using osmosis in-container
+docker compose -f docker/compose.yml run --rm osm \
+  osm_to_pbf --osm /data/input/in.osm --pbf /data/output/in.osm.pbf
+
+# Generate intersections CSV
+docker compose -f docker/compose.yml run --rm osm \
+  osm-intersections --osm /data/input/in.osm --csv /data/output/intersections.csv
+
+# Run configured additional exports
+docker compose -f docker/compose.yml run --rm osm osm_other_exports
+
+# Run abbreviation tester utility
+docker compose -f docker/compose.yml run --rm osm osm_abbr_tester
+
+# Open an interactive shell in the compose service
+docker compose -f docker/compose.yml run --rm osm bash
+```
+
 ## Run Pattern
 General pattern:
 ```bash
